@@ -1,5 +1,5 @@
-#include "MathIsFun.c"
-
+#include <stdio.h>
+#include "MathIsFun.h"
 int main(){
 	int choice, x,n,d;
 	printf("Welcome to Math Is Fun - beta version\n"
