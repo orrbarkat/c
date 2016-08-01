@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Move &apos;sp_bpqueue_unit_test, sp_bpqueue_unit_test.o, SPBPriorityQueue.o, SPList.o, SPListElement.o&apos; to &apos;test&apos;" description="Move 5 resources to &apos;test&apos;" destination="/test" element1="/spa333/sp_bpqueue_unit_test" element2="/spa333/sp_bpqueue_unit_test.o" element3="/spa333/SPBPriorityQueue.o" element4="/spa333/SPList.o" element5="/spa333/SPListElement.o" flags="7" id="org.eclipse.ltk.core.refactoring.move.resources" resources="5" stamp="1465221995316" updateReferences="true"/>
+</session>

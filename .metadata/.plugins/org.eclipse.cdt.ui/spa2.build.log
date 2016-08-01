@@ -1,0 +1,6 @@
+21:05:56 **** Incremental Build of configuration Debug for project spa2 ****
+make all 
+make: Nothing to be done for `all'.
+
+21:05:56 Build Finished (took 122ms)
+

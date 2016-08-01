@@ -1,0 +1,6 @@
+16:27:47 **** Incremental Build of configuration Default for project spa3 ****
+make all 
+make: *** No rule to make target `all'.  Stop.
+
+16:27:47 Build Finished (took 76ms)
+

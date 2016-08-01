@@ -1,0 +1,6 @@
+14:09:34 **** Incremental Build of configuration Default for project 302930813_302814355_assignment2 ****
+make all 
+make: *** No rule to make target `all'.  Stop.
+
+14:09:34 Build Finished (took 62ms)
+

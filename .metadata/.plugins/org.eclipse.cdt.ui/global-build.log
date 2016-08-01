@@ -1,0 +1,92 @@
+15:14:43 **** Incremental Build of configuration Debug for project arrrrrr ****
+make all 
+make: Nothing to be done for `all'.
+15:15:20 **** Incremental Build of configuration Debug for project arrrrrr ****
+make all 
+make: Nothing to be done for `all'.
+15:15:57 **** Incremental Build of configuration Debug for project arrrrrr ****
+make all 
+make: Nothing to be done for `all'.
+15:27:36 **** Incremental Build of configuration Debug for project arrrrrr ****
+make all 
+Building file: ../unit_tests/sp_point_unit_test.c
+Invoking: GCC C Compiler
+gcc -std=c99 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"unit_tests/sp_point_unit_test.d" -MT"unit_tests/sp_point_unit_test.o" -o "unit_tests/sp_point_unit_test.o" "../unit_tests/sp_point_unit_test.c"
+../unit_tests/sp_point_unit_test.c:12:23: warning: format specifies type 'double' but the argument has type 'int' [-Wformat]
+                printf("%f == %f\n",i, spPointGetAxisCoor(p,i));
+                        ~~          ^
+                        %d
+1 warning generated.
+Finished building: ../unit_tests/sp_point_unit_test.c
+ 
+Building file: ../SPPoint.c
+Invoking: GCC C Compiler
+gcc -std=c99 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"SPPoint.d" -MT"SPPoint.o" -o "SPPoint.o" "../SPPoint.c"
+Finished building: ../SPPoint.c
+ 
+Building target: arrrrrr
+Invoking: MacOS X C Linker
+gcc  -o "arrrrrr"  ./unit_tests/sp_point_unit_test.o  ./SPPoint.o   
+Finished building target: arrrrrr
+ 
+15:27:48 **** Incremental Build of configuration Debug for project arrrrrr ****
+make all 
+make: Nothing to be done for `all'.
+15:36:00 **** Incremental Build of configuration Debug for project arrrrrr ****
+make all 
+Building file: ../SPPoint.c
+Invoking: GCC C Compiler
+gcc -std=c99 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"SPPoint.d" -MT"SPPoint.o" -o "SPPoint.o" "../SPPoint.c"
+../SPPoint.c:32:20: error: indirection requires pointer operand ('double' invalid)
+                point->data[i] = *data[i];
+                                 ^~~~~~~~
+1 error generated.
+make: *** [SPPoint.o] Error 1
+15:36:29 **** Incremental Build of configuration Debug for project arrrrrr ****
+make all 
+Building file: ../SPPoint.c
+Invoking: GCC C Compiler
+gcc -std=c99 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"SPPoint.d" -MT"SPPoint.o" -o "SPPoint.o" "../SPPoint.c"
+Finished building: ../SPPoint.c
+ 
+Building target: arrrrrr
+Invoking: MacOS X C Linker
+gcc  -o "arrrrrr"  ./unit_tests/sp_point_unit_test.o  ./SPPoint.o   
+Finished building target: arrrrrr
+ 
+15:42:57 **** Incremental Build of configuration Debug for project arrrrrr ****
+make all 
+Building file: ../SPPoint.c
+Invoking: GCC C Compiler
+gcc -std=c99 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"SPPoint.d" -MT"SPPoint.o" -o "SPPoint.o" "../SPPoint.c"
+Finished building: ../SPPoint.c
+ 
+Building target: arrrrrr
+Invoking: MacOS X C Linker
+gcc  -o "arrrrrr"  ./unit_tests/sp_point_unit_test.o  ./SPPoint.o   
+Finished building target: arrrrrr
+ 
+15:49:56 **** Incremental Build of configuration Debug for project arrrrrr ****
+make all 
+Building file: ../SPPoint.c
+Invoking: GCC C Compiler
+gcc -std=c99 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"SPPoint.d" -MT"SPPoint.o" -o "SPPoint.o" "../SPPoint.c"
+Finished building: ../SPPoint.c
+ 
+Building target: arrrrrr
+Invoking: MacOS X C Linker
+gcc  -o "arrrrrr"  ./unit_tests/sp_point_unit_test.o  ./SPPoint.o   
+Finished building target: arrrrrr
+ 
+17:43:17 **** Incremental Build of configuration Debug for project arrrrrr ****
+make all 
+Building file: ../unit_tests/sp_point_unit_test.c
+Invoking: GCC C Compiler
+gcc -std=c99 -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"unit_tests/sp_point_unit_test.d" -MT"unit_tests/sp_point_unit_test.o" -o "unit_tests/sp_point_unit_test.o" "../unit_tests/sp_point_unit_test.c"
+Finished building: ../unit_tests/sp_point_unit_test.c
+ 
+Building target: arrrrrr
+Invoking: MacOS X C Linker
+gcc  -o "arrrrrr"  ./unit_tests/sp_point_unit_test.o  ./SPPoint.o   
+Finished building target: arrrrrr
+ 

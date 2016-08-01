@@ -1,0 +1,6 @@
+16:16:16 **** Build of configuration Default for project SPAssignment1 ****
+make all 
+make: *** No rule to make target `all'.  Stop.
+
+16:16:16 Build Finished (took 74ms)
+

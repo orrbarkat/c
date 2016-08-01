@@ -1,0 +1,6 @@
+13:00:52 **** Incremental Build of configuration Default for project SPAssignment2 ****
+make all 
+make: *** No rule to make target `all'.  Stop.
+
+13:00:52 Build Finished (took 69ms)
+

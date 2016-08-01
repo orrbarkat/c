@@ -1,0 +1,128 @@
+
+#include "unit_test_util.h"
+#include "../SPListElement.h"
+#include "../SPList.h"
+#include "../SPBPriorityQueue.h"
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdarg.h>
+#include <assert.h>
+
+
+static bool testQueueCreate() {
+	SPBPQueue q = spBPQueueCreate(1);
+	ASSERT_TRUE(q!=NULL);
+	spBPQueueDestroy(q);
+	return true;
+}
+
+static bool testQueueCopy() {
+	SPBPQueue q = spBPQueueCreate(10);
+	SPBPQueue copy = spBPQueueCopy(q);
+	ASSERT_TRUE(copy != NULL);
+	ASSERT_TRUE(0 == spBPQueueSize(copy));
+	ASSERT_TRUE(10 == spBPQueueGetMaxSize(copy));
+	spBPQueueDestroy(q);
+	spBPQueueDestroy(copy);
+	return true;
+}
+
+static bool testQueueClear(){
+	SPBPQueue q = spBPQueueCreate(4);
+	SPListElement element1 = spListElementCreate(1, 0.0);
+	SPListElement element2 = spListElementCreate(2, 0.0);
+	SPListElement element3 = spListElementCreate(1, 1.0);
+	SPListElement element4 = spListElementCreate(1, 0.0);
+	spBPQueueEnqueue(q,element1);
+	spBPQueueEnqueue(q, element2);
+	spBPQueueEnqueue(q, element3);
+	spBPQueueEnqueue(q, element4);
+	spBPQueueClear(q);
+	ASSERT_TRUE(0 == spBPQueueSize(q));
+	spListElementDestroy(element1);
+	spListElementDestroy(element2);
+	spListElementDestroy(element3);
+	spListElementDestroy(element4);
+	spBPQueueDestroy(q);
+	return true;
+}
+
+static bool testQueueDestroy(){
+	spBPQueueDestroy(NULL);
+	return true;
+}
+
+static bool testQueueSize(){
+	SPBPQueue q = spBPQueueCreate(4);
+	SPListElement element1 = spListElementCreate(1, 0.0);
+	SPListElement element2 = spListElementCreate(2, 0.0);
+	SPListElement element3 = spListElementCreate(1, 1.0);
+	SPListElement element4 = spListElementCreate(1, 0.0);
+	ASSERT_TRUE(0 == spBPQueueSize(q));
+	spBPQueueEnqueue(q,element1);
+	ASSERT_TRUE(1 == spBPQueueSize(q));
+	spBPQueueEnqueue(q, element2);
+	ASSERT_TRUE(2 == spBPQueueSize(q));
+	spBPQueueEnqueue(q, element3);
+	ASSERT_TRUE(3 == spBPQueueSize(q));
+	spBPQueueClear(q);
+	ASSERT_TRUE(0 == spBPQueueSize(q));
+	spListElementDestroy(element1);
+	spListElementDestroy(element2);
+	spListElementDestroy(element3);
+	spListElementDestroy(element4);
+	spBPQueueDestroy(q);
+	return true;
+}
+
+static bool testMaxSize(){
+	SPBPQueue q = spBPQueueCreate(7);
+	ASSERT_TRUE(7 == spBPQueueGetMaxSize(q));
+	spBPQueueDestroy(q);
+	return true;
+}
+
+static bool testEnqueue(){
+	SPBPQueue q = spBPQueueCreate(3);
+	SPListElement element1 = spListElementCreate(1, 0.0);
+	SPListElement element2 = spListElementCreate(2, 0.0);
+	SPListElement element3 = spListElementCreate(1, 1.0);
+	SPListElement element4 = spListElementCreate(1, 0.0);
+	SP_BPQUEUE_MSG msg = spBPQueueEnqueue(q, element1);
+	ASSERT_TRUE(SP_BPQUEUE_SUCCESS == msg);
+	msg = spBPQueueEnqueue(q, element2);
+	ASSERT_TRUE(SP_BPQUEUE_SUCCESS == msg);
+	ASSERT_TRUE(spListElementGetIndex(spBPQueuePeek(q)) == 2);
+	spBPQueueEnqueue(q, element3);
+	spBPQueueEnqueue(q, element4);
+	ASSERT_TRUE(spListElementGetIndex(spBPQueuePeekLast(q)) == 1);
+	spListElementDestroy(element1);
+	spListElementDestroy(element2);
+	spListElementDestroy(element3);
+	spListElementDestroy(element4);
+	spBPQueueDestroy(q);
+	return true;
+}
+
+int main() {
+	RUN_TEST(testQueueCreate);
+	RUN_TEST(testQueueCopy);
+	RUN_TEST(testQueueClear);
+	RUN_TEST(testQueueDestroy);
+	RUN_TEST(testQueueSize);
+	RUN_TEST(testMaxSize);
+	RUN_TEST(testEnqueue);
+	RUN_TEST(testDequeue);
+//	RUN_TEST(testListGetLast);
+//	RUN_TEST(testListGetNext);
+//	RUN_TEST(testListGetPrevious);
+//	RUN_TEST(testListInsertFirst);
+//	RUN_TEST(testListInsertLast);
+//	RUN_TEST(testListInsertBeforeCurrent);
+//	RUN_TEST(testListInsertAfterCurrent);
+//	RUN_TEST(testListClear);
+//	RUN_TEST(testListDestroy);
+//	RUN_TEST(testListForEach);
+	return 0;
+}

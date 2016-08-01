@@ -1,0 +1,6 @@
+11:56:09 **** Build of configuration Default for project Tutorial2_Code ****
+make all 
+make: *** No rule to make target `all'.  Stop.
+
+11:56:09 Build Finished (took 70ms)
+

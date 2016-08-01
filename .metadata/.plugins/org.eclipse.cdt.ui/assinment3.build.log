@@ -1,0 +1,6 @@
+21:05:56 **** Incremental Build of configuration Default for project assinment3 ****
+make all 
+make: *** No rule to make target `all'.  Stop.
+
+21:05:56 Build Finished (took 129ms)
+

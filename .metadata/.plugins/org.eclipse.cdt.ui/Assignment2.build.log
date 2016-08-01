@@ -1,0 +1,13 @@
+16:52:18 **** Incremental Build of configuration Debug for project Assignment2 ****
+make all 
+Building file: ../sp_list_unit_test.c
+Invoking: GCC C Compiler
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -MMD -MP -MF"sp_list_unit_test.d" -MT"sp_list_unit_test.o" -o "sp_list_unit_test.o" "../sp_list_unit_test.c"
+../sp_list_unit_test.c:1:10: fatal error: 'unit_test_util.h' file not found
+#include "unit_test_util.h"
+         ^
+1 error generated.
+make: *** [sp_list_unit_test.o] Error 1
+
+16:52:18 Build Finished (took 135ms)
+
