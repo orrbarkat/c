@@ -175,4 +175,24 @@ SP_CONFIG_MSG spConfigGetPCAPath(char* pcaPath, const SPConfig config);
  */
 void spConfigDestroy(SPConfig config);
 
+/**
+ * sets default values for functions
+ */
+static void setDefaults(SPConfig* config);
+
+/**
+ * Line parser for the config file.
+ * if a line is invalid the msg is filled according with the create header
+ */
+static int parseLine(SPConfig* config, const char* line, SP_CONFIG_MSG* msg);
+
+/**
+ * checks if all configuration requirements were met
+ * @return 
+ * - true if not valid conf
+ * - false if the conf is valid
+ */
+static bool invalid(const SPConfig config, SP_CONFIG_MSG* msg);
+
+
 #endif /* SPCONFIG_H_ */

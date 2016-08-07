@@ -7,9 +7,13 @@
 //
 
 #include <stdio.h>
+#include "SPPoint.h"
+#include "SPConfig.h"
+#include "KDTree.h"
+#include "SPLogger.h"
+
 
 int main(int argc, const char * argv[]) {
-    // insert code here...
-    printf("Hello, World!\n");
+    
     return 0;
 }
