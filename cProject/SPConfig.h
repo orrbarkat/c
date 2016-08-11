@@ -1,14 +1,23 @@
 #ifndef SPCONFIG_H_
 #define SPCONFIG_H_
 
-#define LINE_LENGTH 1024
+#define LINE_LENGTH 1025
 
 #include <stdbool.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <assert.h>
+#include <string.h>
 #include "SPLogger.h"
 #include "KDTree.h"
 
+#define DEFAULT_LEN 10 
+#define INVALID_FILE "Invalid configuration line"
+#define IVALID_VALUE "Invalid value - constraint not met"
+#define PARAM_MISSING_DIR "Parameter spImagesDirectory is not set"
+#define PARAM_MISSING_PREFIX "Parameter spImagesPrefix is not set"
+#define PARAM_MISSING_SUFFIX "Parameter spImagesSuffix is not set"
+#define PARAM_MISSING_NUM_IMAGES "Parameter spNumOfImages is not set"
 
 /**
  * A data-structure which is used for configuring the system.
@@ -174,25 +183,5 @@ SP_CONFIG_MSG spConfigGetPCAPath(char* pcaPath, const SPConfig config);
  * If config == NULL nothig is done.
  */
 void spConfigDestroy(SPConfig config);
-
-/**
- * sets default values for functions
- */
-static void setDefaults(SPConfig* config);
-
-/**
- * Line parser for the config file.
- * if a line is invalid the msg is filled according with the create header
- */
-static int parseLine(SPConfig* config, const char* line, SP_CONFIG_MSG* msg);
-
-/**
- * checks if all configuration requirements were met
- * @return 
- * - true if not valid conf
- * - false if the conf is valid
- */
-static bool invalid(const SPConfig config, SP_CONFIG_MSG* msg);
-
 
 #endif /* SPCONFIG_H_ */
