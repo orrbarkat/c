@@ -17,11 +17,25 @@ struct sp_config_t {
     KDTreeSplitMethod spKDTreeSplitMethod;
 };
 
+void spConfigPrintCliError(const char* filename, const SP_CONFIG_MSG message){
+    switch (message) {
+        case SP_CONFIG_CANNOT_OPEN_FILE:
+            strcmp(filename,DEFAULT_CONFIG) ? printf("The configuration file %s couldn’t be open\n"\
+            ,filename) : printf("The default configuration file spcbir.config couldn’t be open\n");
+            break;
+        default:
+            printf("Invalid command line : use -c %s\n", filename);
+            break;
+    }
+}
+
+
 /**
  * print message to stdout
  */
 void spConfigPrintError(const char* filename, int line, const SP_CONFIG_MSG* message){
     char* type;
+    bool print = true;
     switch (*message) {
         case SP_CONFIG_MISSING_DIR:
             type = PARAM_MISSING_DIR;
@@ -36,15 +50,19 @@ void spConfigPrintError(const char* filename, int line, const SP_CONFIG_MSG* mes
             type = PARAM_MISSING_NUM_IMAGES;
             break;
         case SP_CONFIG_CANNOT_OPEN_FILE:
-            type = INVALID_FILE;
+            spConfigPrintCliError(filename, *message);
+            print = false;
             break;
         default://all other errors are invalid value
             type = IVALID_VALUE;
             break;
     }
-    printf("File: %s\nLine: %i\nMessage: %s\n", filename, line,type);
+    if(print){
+        printf("File: %s\nLine: %i\nMessage: %s\n", filename, line,type);
+    }
     return;
 }
+
 
  
 /**
@@ -306,14 +324,12 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg){
         }
         lineNumber++;
     }
+    fclose(fp);
     if (invalid(&config,msg)){
-        fclose(fp);
         spConfigPrintError(filename, lineNumber, msg);
         spConfigDestroy(config);
         return NULL;
     }
-    printf("%i %s\n",lineNumber,"lines read");
-    fclose(fp);
     *msg = SP_CONFIG_SUCCESS;
     return config;
 }
@@ -398,25 +414,40 @@ SP_CONFIG_MSG spConfigGetPCAPath(char* pcaPath, const SPConfig config){
 
 void spConfigDestroy(SPConfig config){
     if (config){
-//        free(config->spImagesDirectory);
-//        free(config->spImagesPrefix);
-//        free(config->spImagesSuffix);
-//        //TODO: fix free of not allocated char*
-//        if(config->spPCAFilename){free(config->spPCAFilename);}
-//        if(config->spLoggerFilename){ free(config->spLoggerFilename);}
+        free(config->spImagesDirectory);
+        free(config->spImagesPrefix);
+        free(config->spImagesSuffix);
+        //TODO: fix free of not allocated char*
+        free(config->spPCAFilename);
+        free(config->spLoggerFilename);
     }
     free(config);
 }
 
-int main(int argc, const char * argv[]) {
-    SP_CONFIG_MSG *msg = (SP_CONFIG_MSG*)malloc(sizeof(*msg));
-    SPConfig conf = spConfigCreate("./spcbir.config", msg);
-    if (conf->spExtractionMode){
-        printf("it works!!!");
+bool spConfigGetConfigFile(int argc, const char * argv[], char *filename){
+    bool res = false ;
+    if (argc == 1){
+        strcpy(filename, DEFAULT_CONFIG);
+    }else if(argc == 3 && strcmp(argv[2],"-c")){
+        strcpy(filename, argv[2]);
     }else{
-        spConfigPrintError(__FILE__, 10000, msg);
+        res = true;
+        spConfigPrintCliError(filename, SP_CONFIG_INVALID_ARGUMENT);
     }
-//    spConfigDestroy(conf);
-    printf("works");
-    return 0;
+    return res;
+    /**
+     *made for multiple arguments might not be needed
+    int i=1;
+    while(i<argc){
+        if (!strcmp(argv[i],"-c")){//the right flag
+            strcpy(filename, argv[i+1]);
+            return;
+        }
+        i++;
+    }
+    strcpy(filename, DEFAULT_CONFIG);
+    return ;
+     */
 }
+
+

@@ -13,12 +13,20 @@
 #include "SPLogger.h"
 
 
-//int main(int argc, const char * argv[]) {
-//    printf("%s\n", argv[0] );
-//    printf("%s\n", argv[1] );
-//    SP_CONFIG_MSG *msg = (SP_CONFIG_MSG*)malloc(sizeof(*msg));
-//    SPConfig conf = spConfigCreate("/Users/orrbarkat/dev/c/cProject/pca.yml", msg);
-//    spConfigDestroy(conf);
-//    printf("works");
-//    return 0;
-//}
+
+int main(int argc, const char * argv[]) {
+    SP_CONFIG_MSG *msg = (SP_CONFIG_MSG*)malloc(sizeof(*msg));
+    char filename[LINE_LENGTH];
+    if( spConfigGetConfigFile(argc, argv, filename)){
+        free(msg);
+        return 0;
+    }
+    SPConfig conf = spConfigCreate(filename, msg);
+    if (conf){
+        printf("it works!!!");
+    }
+    spConfigDestroy(conf);
+    printf("works");
+    free(msg);
+    return 0;
+}

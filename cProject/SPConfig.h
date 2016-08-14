@@ -1,23 +1,23 @@
 #ifndef SPCONFIG_H_
 #define SPCONFIG_H_
 
-#define LINE_LENGTH 1025
+#define LINE_LENGTH 1024
 
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
-#include "SPLogger.h"
 #include "KDTree.h"
 
 #define DEFAULT_LEN 10 
-#define INVALID_FILE "Invalid configuration line"
+#define INVALID_FILE "The configuration file  couldn’t be open"
 #define IVALID_VALUE "Invalid value - constraint not met"
 #define PARAM_MISSING_DIR "Parameter spImagesDirectory is not set"
 #define PARAM_MISSING_PREFIX "Parameter spImagesPrefix is not set"
 #define PARAM_MISSING_SUFFIX "Parameter spImagesSuffix is not set"
 #define PARAM_MISSING_NUM_IMAGES "Parameter spNumOfImages is not set"
+#define DEFAULT_CONFIG "spcbir.config"
 
 /**
  * A data-structure which is used for configuring the system.
@@ -34,6 +34,7 @@ typedef enum sp_config_msg_t {
 	SP_CONFIG_INVALID_STRING,
 	SP_CONFIG_INVALID_ARGUMENT,
 	SP_CONFIG_INDEX_OUT_OF_RANGE,
+    SP_CONFIG_BAD_DEFAULT_FILE,
 	SP_CONFIG_SUCCESS
 } SP_CONFIG_MSG;
 
@@ -183,5 +184,15 @@ SP_CONFIG_MSG spConfigGetPCAPath(char* pcaPath, const SPConfig config);
  * If config == NULL nothig is done.
  */
 void spConfigDestroy(SPConfig config);
+
+/**
+ *set the config file for the create method
+ * if flag is different than -c prints an regular error
+ * @param filename is large enough
+ * @return 
+ *  -true if cli is wrongly formatted
+ *  -false else
+ */
+bool spConfigGetConfigFile(int argc, const char * argv[], char *filename);
 
 #endif /* SPCONFIG_H_ */
