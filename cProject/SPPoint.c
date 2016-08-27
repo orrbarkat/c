@@ -13,7 +13,7 @@ struct sp_point_t{
 };
 
 SPPoint spPointCreate(double* data, int dim, int index){
-	SPPoint p = (SPPoint)malloc(sizeof(SPPoint)); //SPPoint memory allocation
+	SPPoint p = (SPPoint)malloc(sizeof(p)); //SPPoint memory allocation
 	int i;
 
 	/* Checking if arguments are valid */

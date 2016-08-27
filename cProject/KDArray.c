@@ -17,9 +17,9 @@ struct sp_kdarray_t{
 };
 
 
-int compare_points(void *kdArr, const void *a, const void *b){
+int compare_points(void *kdArr, const void *a, const void *b ){
     SPKDArray kd = (SPKDArray)kdArr;
-    int pA = *(int*)a, pB = *(int*)b;
+    int pA = *(int *)a, pB = *(int *)b;
     SPPoint pointA = kd->points[pA];
     SPPoint pointB = kd->points[pB];
     double dPointA = spPointGetAxisCoor(pointA, kd->axis);
@@ -75,6 +75,7 @@ SPKDArray spKDArrayInit(SPPoint* arr, int size, SPConfig config, SP_CONFIG_MSG *
             kdArr->featsMat[i][j] = j;
         }
         qsort_r(kdArr->featsMat[i], size, sizeof(int), kdArr, compare_points);
+        
     }
     spLoggerPrintInfo(KDARRAY_CREATED);
     //TODO: check msg to see if there are errors

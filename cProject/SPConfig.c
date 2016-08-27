@@ -146,7 +146,7 @@ int parseLine(SPConfig* config, const char* line, SP_CONFIG_MSG* msg){
         }
 
         temp[tempIndex] = '\0';
-        variables[varIndex] = malloc(tempIndex);
+        variables[varIndex] = (char *)malloc(tempIndex);
         strcpy(variables[varIndex], temp);
     }
  
@@ -209,7 +209,7 @@ int parseLine(SPConfig* config, const char* line, SP_CONFIG_MSG* msg){
     }else if(strcmp(variables[0],"spExtractionMode")==0){
         if(strcmp(variables[1],"false")==0){
             (*config)->spExtractionMode = true;
-        }else if(strcpy(variables[1],"true")==0){
+        }else if(strcmp(variables[1],"true")==0){
                 (*config)->spExtractionMode = false;
         }else{
                 *msg = SP_CONFIG_INVALID_STRING;
