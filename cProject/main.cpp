@@ -47,7 +47,7 @@ int main(int argc, const char * argv[]) {
         return 0;
     }
     if( spConfigIsExtractionMode(conf, msg)){
-        processor = new ImageProc::ImageProc(conf);
+        processor = new ImageProc(conf);
         for(i=0; i<numOfImages; i++){
             spConfigGetImagePath(currentPointPath, conf, i);
             points = processor->getImageFeatures(currentPointPath, i, &numOfFeats);

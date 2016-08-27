@@ -431,7 +431,7 @@ bool spConfigGetConfigFile(int argc, const char * argv[], char *filename, SP_CON
     bool res = false ;
     if (argc == 1){
         strcpy(filename, DEFAULT_CONFIG);
-    }else if(argc == 3 && strcmp(argv[2],"-c")){
+    }else if(argc == 3 && strcmp(argv[1],"-c")){
         strcpy(filename, argv[2]);
     }else{
         res = true;

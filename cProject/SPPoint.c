@@ -1,9 +1,3 @@
-/*
- * SPPoint.c
- *
- *  Created on: May 19, 2016
- *      Author: Netanel
- */
 
 #include "SPPoint.h"
 

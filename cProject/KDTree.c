@@ -7,3 +7,12 @@
 //
 
 #include "KDTree.h"
+
+struct sp_kdtree_node_t{
+    int dim;
+    double val;
+    SPKDTreeNode left;
+    SPKDTreeNode right;
+    SPPoint data;
+};
+
