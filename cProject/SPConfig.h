@@ -9,15 +9,18 @@
 #include <assert.h>
 #include <string.h>
 #include "KDTree.h"
-
-#define DEFAULT_LEN 10 
+#include "SPLogger.h"
+ 
 #define INVALID_FILE "The configuration file  couldn’t be open"
-#define IVALID_VALUE "Invalid value - constraint not met"
+#define INVALID_VALUE "Invalid value - constraint not met"
 #define PARAM_MISSING_DIR "Parameter spImagesDirectory is not set"
 #define PARAM_MISSING_PREFIX "Parameter spImagesPrefix is not set"
 #define PARAM_MISSING_SUFFIX "Parameter spImagesSuffix is not set"
 #define PARAM_MISSING_NUM_IMAGES "Parameter spNumOfImages is not set"
 #define DEFAULT_CONFIG "spcbir.config"
+#define FEATURE_EXTENTION ".feats"
+#define INDEX_OUT_OF_RANGE "given index is larger than number of images in configuration."
+
 
 /**
  * A data-structure which is used for configuring the system.
@@ -161,6 +164,33 @@ int spConfigGetPCADim(const SPConfig config, SP_CONFIG_MSG* msg);
 SP_CONFIG_MSG spConfigGetImagePath(char* imagePath, const SPConfig config,
 		int index);
 
+
+/**
+ * Given an index 'index' the function stores in path the full path of the
+ * ith image.
+ *
+ * For example:
+ * Given that the value of:
+ *  spImagesDirectory = "./images/"
+ *  spImagesPrefix = "img"
+ *  spNumOfImages = 17
+ *  index = 10
+ *
+ * The functions stores "./images/img10.feats" to the address given by imagePath.
+ * Thus the address given by imagePath must contain enough space to
+ * store the resulting string.
+ *
+ * @param imagePath - an address to store the result in, it must contain enough space.
+ * @param config - the configuration structure
+ * @param index - the index of the image.
+ *
+ * @return
+ * - SP_CONFIG_INVALID_ARGUMENT - if imagePath == NULL or config == NULL
+ * - SP_CONFIG_INDEX_OUT_OF_RANGE - if index >= spNumOfImages
+ * - SP_CONFIG_SUCCESS - in case of success
+ */
+SP_CONFIG_MSG spConfigGetSavePath(char* path, const SPConfig config, int index);
+
 /**
  * The function stores in pcaPath the full path of the pca file.
  * For example given the values of:
@@ -193,6 +223,6 @@ void spConfigDestroy(SPConfig config);
  *  -true if cli is wrongly formatted
  *  -false else
  */
-bool spConfigGetConfigFile(int argc, const char * argv[], char *filename);
+bool spConfigGetConfigFile(int argc, const char * argv[], char *filename,SP_CONFIG_MSG *msg);
 
 #endif /* SPCONFIG_H_ */

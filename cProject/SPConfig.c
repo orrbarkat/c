@@ -24,7 +24,7 @@ void spConfigPrintCliError(const char* filename, const SP_CONFIG_MSG message){
             ,filename) : printf("The default configuration file spcbir.config couldn’t be open\n");
             break;
         default:
-            printf("Invalid command line : use -c %s\n", filename);
+            printf("Invalid command line : use -c <config_filename>\n");
             break;
     }
 }
@@ -34,11 +34,10 @@ void spConfigPrintCliError(const char* filename, const SP_CONFIG_MSG message){
  * print message to stdout
  */
 void spConfigPrintError(const char* filename, int line, const SP_CONFIG_MSG* message){
-    char* type;
+    char* type = PARAM_MISSING_DIR;
     bool print = true;
     switch (*message) {
         case SP_CONFIG_MISSING_DIR:
-            type = PARAM_MISSING_DIR;
             break;
         case SP_CONFIG_MISSING_PREFIX:
             type = PARAM_MISSING_PREFIX;
@@ -54,7 +53,7 @@ void spConfigPrintError(const char* filename, int line, const SP_CONFIG_MSG* mes
             print = false;
             break;
         default://all other errors are invalid value
-            type = IVALID_VALUE;
+            type = INVALID_VALUE;
             break;
     }
     if(print){
@@ -68,7 +67,7 @@ void spConfigPrintError(const char* filename, int line, const SP_CONFIG_MSG* mes
 /**
  * sets default values for functions
  */
-void setDefaults(SPConfig* config){
+void setDefaults(SPConfig* config, SP_CONFIG_MSG *msg){
     if (!config){ return; }
     //TODO: refactor magic numbers out to header file
     (*config)->spPCADimension = 20;
@@ -79,6 +78,15 @@ void setDefaults(SPConfig* config){
     (*config)->spKDTreeSplitMethod = MAX_SPREAD;
     (*config)->spLoggerLevel = 3;
     (*config)->spNumOfSimilarImages = 1;
+    (*config)->spImagesDirectory = (char*)malloc(LINE_LENGTH*sizeof(char));
+    (*config)->spImagesDirectory = (char*)malloc(LINE_LENGTH*sizeof(char));
+    (*config)->spImagesPrefix = (char*)malloc(LINE_LENGTH*sizeof(char));
+    (*config)->spImagesSuffix = (char*)malloc(LINE_LENGTH*sizeof(char));
+    (*config)->spPCAFilename = (char*)calloc(LINE_LENGTH,sizeof(char));
+    (*config)->spLoggerFilename = (char*)calloc( LINE_LENGTH,sizeof(char));
+    if (!((*config)->spImagesDirectory && (*config)->spImagesSuffix && (*config)->spImagesPrefix && (*config)->spPCAFilename && (*config)->spLoggerFilename)){
+        *msg = SP_CONFIG_ALLOC_FAIL;
+    }
     return;
 }
 
@@ -119,6 +127,7 @@ int parseLine(SPConfig* config, const char* line, SP_CONFIG_MSG* msg){
                 case '#':
                     comment = true;
                     break;
+                case '\t':
                 case ' ':
                     if(tempIndex){// variable is not empty by now
                         hasSpaces = true;
@@ -143,40 +152,21 @@ int parseLine(SPConfig* config, const char* line, SP_CONFIG_MSG* msg){
  
     // find the right config var and insert the value if it's valid
     if(strcmp(variables[0],"spImagesDirectory")==0){
-        (*config)->spImagesDirectory = (char*)malloc(tempIndex*sizeof(char));
-        if (!(*config)->spImagesDirectory){
-            *msg = SP_CONFIG_ALLOC_FAIL;
-        }
         strcpy((*config)->spImagesDirectory, variables[1]);
         
     }else if(strcmp(variables[0],"spImagesPrefix")==0){
-        (*config)->spImagesPrefix = (char*)malloc(tempIndex*sizeof(char));
-        if (!(*config)->spImagesPrefix){
-            *msg = SP_CONFIG_ALLOC_FAIL;
-        }
         strcpy((*config)->spImagesPrefix, variables[1]);
         
     }else if(strcmp(variables[0],"spImagesSuffix")==0){
-        (*config)->spImagesSuffix = (char*)malloc(tempIndex*sizeof(char));
-        if (!(*config)->spImagesSuffix){
-            *msg = SP_CONFIG_ALLOC_FAIL;
-        }else if(suffixValidator(variables[1])){ // value is not in .jpg , .png , .bmp , .gif
+        if(suffixValidator(variables[1])){ // value is not in .jpg , .png , .bmp , .gif
             *msg = SP_CONFIG_INVALID_STRING;
         }
         strcpy((*config)->spImagesSuffix, variables[1]);
         
     }else if(strcmp(variables[0],"spPCAFilename")==0){
-        (*config)->spPCAFilename = (char*)calloc(tempIndex,sizeof(char));
-        if (!(*config)->spPCAFilename){
-            *msg = SP_CONFIG_ALLOC_FAIL;
-        }
         strcpy((*config)->spPCAFilename, variables[1]);
         
     }else if(strcmp(variables[0],"spLoggerFilename")==0){
-        (*config)->spLoggerFilename = (char*)calloc( tempIndex,sizeof(char));
-        if (!(*config)->spLoggerFilename){
-            *msg = SP_CONFIG_ALLOC_FAIL;
-        }
         strcpy((*config)->spLoggerFilename, variables[1]);
         
     }else if(strcmp(variables[0],"spNumOfImages")==0){
@@ -257,25 +247,22 @@ int parseLine(SPConfig* config, const char* line, SP_CONFIG_MSG* msg){
  */
 bool invalid(const SPConfig *config, SP_CONFIG_MSG* msg){
     bool validity = false;
-    if(!(*config)->spPCAFilename){
-        (*config)->spPCAFilename = (char*)malloc(DEFAULT_LEN);
+    if(!*(*config)->spPCAFilename){
         strcpy((*config)->spPCAFilename,"pca.yml");
     }
-    if(!(*config)->spLoggerFilename){
-        (*config)->spLoggerFilename = (char*)malloc(DEFAULT_LEN);
+    if(!*(*config)->spLoggerFilename){
         strcpy((*config)->spLoggerFilename,"stdout");
-        
     }
     // check that
-    if(!(*config)->spImagesDirectory){
+    if(!*(*config)->spImagesDirectory){
         *msg = SP_CONFIG_MISSING_DIR;
         validity=true;
     }
-    if(!(*config)->spImagesPrefix){
+    if(!*(*config)->spImagesPrefix){
         *msg = SP_CONFIG_MISSING_PREFIX;
         validity=true;
     }
-    if(!(*config)->spImagesSuffix){
+    if(!*(*config)->spImagesSuffix){
         *msg = SP_CONFIG_MISSING_SUFFIX;
         validity=true;
     }
@@ -314,7 +301,7 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg){
         fclose(fp);
         return NULL;
     }
-    setDefaults(&config);
+    setDefaults(&config, msg);
     while (fgets(line, LINE_LENGTH, fp)){
         if ( parseLine(&config, line, msg)<0){
             fclose(fp);
@@ -330,6 +317,7 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg){
         spConfigDestroy(config);
         return NULL;
     }
+    spLoggerCreate(config->spLoggerFilename, config->spLoggerLevel);
     *msg = SP_CONFIG_SUCCESS;
     return config;
 }
@@ -400,6 +388,22 @@ SP_CONFIG_MSG spConfigGetImagePath(char* imagePath, const SPConfig config,int in
     return ret;
 }
 
+SP_CONFIG_MSG spConfigGetSavePath(char* path, const SPConfig config, int index){
+    SP_CONFIG_MSG ret;
+    if (!config || !path){
+        ret = SP_CONFIG_INVALID_ARGUMENT;
+        spLoggerPrintError(INVALID_VALUE, __FILE__, __FUNCTION__, __LINE__);
+    }else if (index>=config->spNumOfImages){
+        ret = SP_CONFIG_INDEX_OUT_OF_RANGE;
+        spLoggerPrintError(INDEX_OUT_OF_RANGE, __FILE__, __FUNCTION__, __LINE__);
+    }else{
+        sprintf(path, "%s%s%i%s",config->spImagesDirectory, config->spImagesPrefix, index, FEATURE_EXTENTION);
+        ret = SP_CONFIG_SUCCESS;
+    }
+    return ret;
+}
+
+
 SP_CONFIG_MSG spConfigGetPCAPath(char* pcaPath, const SPConfig config){
     SP_CONFIG_MSG ret;
     if (!config || !pcaPath){
@@ -417,14 +421,13 @@ void spConfigDestroy(SPConfig config){
         free(config->spImagesDirectory);
         free(config->spImagesPrefix);
         free(config->spImagesSuffix);
-        //TODO: fix free of not allocated char*
         free(config->spPCAFilename);
         free(config->spLoggerFilename);
     }
     free(config);
 }
 
-bool spConfigGetConfigFile(int argc, const char * argv[], char *filename){
+bool spConfigGetConfigFile(int argc, const char * argv[], char *filename, SP_CONFIG_MSG *msg){
     bool res = false ;
     if (argc == 1){
         strcpy(filename, DEFAULT_CONFIG);
@@ -432,22 +435,11 @@ bool spConfigGetConfigFile(int argc, const char * argv[], char *filename){
         strcpy(filename, argv[2]);
     }else{
         res = true;
+        *msg = SP_CONFIG_INVALID_ARGUMENT;
         spConfigPrintCliError(filename, SP_CONFIG_INVALID_ARGUMENT);
     }
     return res;
-    /**
-     *made for multiple arguments might not be needed
-    int i=1;
-    while(i<argc){
-        if (!strcmp(argv[i],"-c")){//the right flag
-            strcpy(filename, argv[i+1]);
-            return;
-        }
-        i++;
-    }
-    strcpy(filename, DEFAULT_CONFIG);
-    return ;
-     */
 }
+
 
 

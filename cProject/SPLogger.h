@@ -8,6 +8,10 @@
 #define FUNCTION_NAME "- function: "
 #define LINE_NUM "- line: "
 #define MSG_BODY "- message: "
+#define EXTACTING "extracting features...\n"
+#define ALLOC_FAIL "memory allocation failed\n"
+#define FILE_IO_FAIL "cannot open the file\n"
+#define EXTRACT_FAIL "extraction failed\n"
 
 /**
  * SP Logger summary:
