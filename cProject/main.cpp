@@ -14,6 +14,7 @@ extern "C" {
 #include "SPPoint.h"
 #include "SPConfig.h"
 #include "KDTree.h"
+#include "KDArray.h"
 #include "SPLogger.h"
 #include "SPExtractor.h"
 }
@@ -26,6 +27,7 @@ int main(int argc, const char * argv[]) {
     ImageProc *processor;
     int numOfFeats, numOfImages, i, totalNumOfPoints=0;
     SPPoint *points;
+    SPKDArray kdArray;
     //create a config struct
     SP_CONFIG_MSG *msg = (SP_CONFIG_MSG*)malloc(sizeof(*msg));
     char filename[LINE_LENGTH];
@@ -53,13 +55,13 @@ int main(int argc, const char * argv[]) {
             points = processor->getImageFeatures(currentPointPath, i, &numOfFeats);
             spConfigGetSavePath(currentPointPath, conf, i);
             spExtractorSaveFeatures(currentPointPath, numOfFeats, conf, msg, points);
-            free(points);
             totalNumOfPoints += numOfFeats;
         }
     }//get the points whether they where extracted or not
     points = spExtractorLoadAllFeatures(&totalNumOfPoints, numOfImages, conf, msg);
     
     //initialize data structures
+    kdArray = spKDArrayInit(points, totalNumOfPoints, conf, msg);
     
     //Query
     printf("Please enter an image path:\n");

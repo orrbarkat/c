@@ -18,12 +18,5 @@
 
 typedef struct sp_kdtree_node_t* SPKDTreeNode;
 
-typedef enum sp_kdtree_split_method_t {
-    RANDOM,
-    MAX_SPREAD,
-    INCREMENTAL
-} KDTreeSplitMethod;
-
-
 
 #endif /* KDTree_h */

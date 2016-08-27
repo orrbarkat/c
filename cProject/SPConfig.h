@@ -8,7 +8,6 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
-#include "KDTree.h"
 #include "SPLogger.h"
  
 #define INVALID_FILE "The configuration file  couldn’t be open"
@@ -40,6 +39,13 @@ typedef enum sp_config_msg_t {
     SP_CONFIG_BAD_DEFAULT_FILE,
 	SP_CONFIG_SUCCESS
 } SP_CONFIG_MSG;
+
+typedef enum sp_kdtree_split_method_t {
+    RANDOM,
+    MAX_SPREAD,
+    INCREMENTAL
+} KDTreeSplitMethod;
+
 
 typedef struct sp_config_t* SPConfig;
 

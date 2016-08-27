@@ -5,12 +5,11 @@
 //  Created by Orr Barkat on 14/08/2016.
 //  Copyright © 2016 Orr Barkat. All rights reserved.
 //
-
 #include "KDArray.h"
 
 struct sp_kdarray_t{
-    SPPoint *points;
-    int size;
+    SPPoint *points;//the size of 
+    int size;//this is for keeping track of the proccess
     int** featsMat;
     int numOfFeats;
     int dim;
@@ -18,11 +17,14 @@ struct sp_kdarray_t{
 };
 
 
-int compare_points(void *a, const void *b, const void *kdArr){
+int compare_points(void *kdArr, const void *a, const void *b){
     SPKDArray kd = (SPKDArray)kdArr;
-    const double da =  spPointGetAxisCoor((kd->points)[(int)a], kd->axis);
-    const double db = spPointGetAxisCoor((kd->points)[(int)b], kd->axis);
-    return (da > db) - (da < db);
+    int pA = *(int*)a, pB = *(int*)b;
+    SPPoint pointA = kd->points[pA];
+    SPPoint pointB = kd->points[pB];
+    double dPointA = spPointGetAxisCoor(pointA, kd->axis);
+    double dPointB = spPointGetAxisCoor(pointB, kd->axis);
+    return (dPointA > dPointB) - (dPointA < dPointB);
 }
 
 
@@ -58,7 +60,8 @@ SPKDArray spKDArrayInit(SPPoint* arr, int size, SPConfig config, SP_CONFIG_MSG *
         //create the matrix
     kdArr->featsMat = malloc(kdArr->dim*sizeof(*kdArr->featsMat));
     if (!kdArr->featsMat) {
-        spKDArrayDestroy(kdArr,-1);
+        spLoggerPrintError(ALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+        spKDArrayDestroy(kdArr,NOT_PRESENT);
         return NULL;
 
     }

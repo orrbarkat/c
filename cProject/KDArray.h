@@ -42,7 +42,7 @@
  */
 
 /**
- * A data-structure which is used for pointes.
+ * A data-structure which is used for points.
  *
  */
 
@@ -59,6 +59,7 @@ typedef struct sp_kdarray_t* SPKDArray;
  * Otherwise, the new array is returned
  */
 SPKDArray spKDArrayInit(SPPoint* arr, int size, SPConfig config, SP_CONFIG_MSG *msg);
+
 
 /**
  * Returns two kd-arrays (kdLeft, kdRight) such that the first ⌈𝒏/𝟐⌉ points with respect
