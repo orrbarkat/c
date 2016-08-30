@@ -314,11 +314,11 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg){
         lineNumber++;
     }
     fclose(fp);
-//    if (invalid(&config,msg)){
-//        spConfigPrintError(filename, lineNumber, msg);
-//        spConfigDestroy(config);
-//        return NULL;
-//    }
+    if (invalid(&config,msg)){
+        spConfigPrintError(filename, lineNumber, msg);
+        spConfigDestroy(config);
+        return NULL;
+    }
     spLoggerCreate(config->spLoggerFilename, config->spLoggerLevel);
     *msg = SP_CONFIG_SUCCESS;
     return config;
@@ -456,5 +456,12 @@ int spConfigGetKNN(SPConfig config, SP_CONFIG_MSG *msg){
     assert(config != NULL);
     *msg = SP_CONFIG_SUCCESS;
     return config->spKNN;
+}
+
+int spConfigGetNumOfSimilarImages(SPConfig config, SP_CONFIG_MSG *msg){
+    assert(msg != NULL);
+    assert(config != NULL);
+    *msg = SP_CONFIG_SUCCESS;
+    return config->spNumOfSimilarImages;
 }
 

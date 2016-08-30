@@ -255,4 +255,16 @@ KDTreeSplitMethod spConfigGetSplitMethod(SPConfig config, SP_CONFIG_MSG *msg);
  */
 int spConfigGetKNN(SPConfig config, SP_CONFIG_MSG *msg);
 
+/**
+ * Returns the Num of similar images value. i.e the value of spNumOfSimilarImages.
+ *
+ * @param config - the configuration structure
+ * @assert msg != NULL and config != NULL
+ * @param msg - pointer in which the msg returned by the function is stored
+ * @return the spNumOfSimilarImages in success, assert otherwise.
+ *
+ * - SP_CONFIG_SUCCESS - in case of success is inside msg
+ */
+int spConfigGetNumOfSimilarImages(SPConfig config, SP_CONFIG_MSG *msg);
+
 #endif /* SPCONFIG_H_ */
