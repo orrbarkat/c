@@ -24,10 +24,12 @@ using namespace sp;
 
 int main(int argc, const char * argv[]) {
     char query[LINE_LENGTH], currentPointPath[LINE_LENGTH];
-    ImageProc *processor;
+    ImageProc *processor = nullptr;
     int numOfFeats, numOfImages, i, totalNumOfPoints=0;
+    SP_EXTRACT_MSG extractMsg;
     SPPoint *points;
     SPKDArray kdArray;
+    SPKDTreeNode root;
     //create a config struct
     SP_CONFIG_MSG *msg = (SP_CONFIG_MSG*)malloc(sizeof(*msg));
     char filename[LINE_LENGTH];
@@ -54,26 +56,52 @@ int main(int argc, const char * argv[]) {
             spConfigGetImagePath(currentPointPath, conf, i);
             points = processor->getImageFeatures(currentPointPath, i, &numOfFeats);
             spConfigGetSavePath(currentPointPath, conf, i);
-            spExtractorSaveFeatures(currentPointPath, numOfFeats, conf, msg, points);
+            if((extractMsg = spExtractorSaveFeatures(currentPointPath, numOfFeats, conf, msg, points)) != SP_EXTRACT_SUCCESS){
+                if(extractMsg != SP_EXTRACT_BAD_INPUT){
+                    for(i=0; i<numOfFeats; i++){
+                        spPointDestroy(points[i]);
+                    }
+                    free(points);
+                    spConfigDestroy(conf);
+                    delete processor;
+                    free(msg);
+                    return 0;
+                }
+            }
             totalNumOfPoints += numOfFeats;
+            free(points);
         }
+        
     }//get the points whether they where extracted or not
     points = spExtractorLoadAllFeatures(&totalNumOfPoints, numOfImages, conf, msg);
-    
+    if(!points){
+        spLoggerPrintError(EXTRACT_FAIL, __FILE__, __FUNCTION__, __LINE__);
+        spConfigDestroy(conf);
+        delete processor;
+        free(msg);
+        return 0;
+    }
     //initialize data structures
     kdArray = spKDArrayInit(points, totalNumOfPoints, conf, msg);
-    
+    if(!kdArray){
+        spLoggerPrintError(KDARRAY_FAIL, __FILE__, __FUNCTION__, __LINE__);
+        spConfigDestroy(conf);
+        delete processor;
+        free(msg);
+        return 0;
+    }
+    root = spKDTreeCreateFromArray(kdArray, -1, conf, msg);
     //Query
     printf("Please enter an image path:\n");
-//    scanf("%s", query);
+    scanf("%s", query);
     
     
     
     
-    
+    spKDTreeDestroy(root);
     spConfigDestroy(conf);
     printf("works");
-    free(processor);
+    delete processor;
     free(msg);
     return 0;
 }

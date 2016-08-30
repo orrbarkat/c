@@ -9,6 +9,8 @@
 #ifndef KDTree_h
 #define KDTree_h
 
+#define INVALID -1
+
 #include <stdio.h>
 #include "KDArray.h"
 #include "SPConfig.h"
@@ -17,6 +19,11 @@
 
 
 typedef struct sp_kdtree_node_t* SPKDTreeNode;
+
+
+SPKDTreeNode spKDTreeCreateFromArray(SPKDArray kdArr,int prevDim, SPConfig config, SP_CONFIG_MSG *msg);
+
+void spKDTreeDestroy(SPKDTreeNode node);
 
 
 #endif /* KDTree_h */

@@ -2,9 +2,7 @@
 
 #include "SPPoint.h"
 
-#include <stdlib.h>
 
-#include <assert.h>
 
 struct sp_point_t{
 	int index;
@@ -13,23 +11,25 @@ struct sp_point_t{
 };
 
 SPPoint spPointCreate(double* data, int dim, int index){
-	SPPoint p = (SPPoint)malloc(sizeof(p)); //SPPoint memory allocation
-	int i;
-
-	/* Checking if arguments are valid */
-	if (data == NULL || dim <= 0 || index < 0){
-		free(p);
-		return NULL;
-	}
-
-	/* Updating fields of p */
-	p->index = index;
-	p->dim = dim;
-	p->coords = (double *)malloc(dim*sizeof(double));
-	for (i = 0; i < dim; ++i) {
-		(p->coords)[i] = data[i]; //p_i = data[i]
-	}
-	return p;
+    assert((dim > 0) && data && (index >= 0));
+    //Printdata(&data, dim);
+    struct sp_point_t *point = (struct sp_point_t*) malloc(sizeof(*point));
+    if (point == NULL) {
+        return NULL;
+    }
+    point->coords = (double *)malloc(dim * sizeof(double));
+    if(!point->coords){
+        free(point);
+        return NULL;
+    }
+    point->dim = dim;
+    point->index = index;
+    
+    for ( int i = 0; i < dim; i++) {
+        (point->coords)[i] = data[i];
+    }
+    
+    return point;
 }
 
 SPPoint spPointCopy(SPPoint source){
@@ -41,7 +41,7 @@ SPPoint spPointCopy(SPPoint source){
 
 void spPointDestroy(SPPoint point){
 	if (point != NULL){
-		free((*point).coords);
+		free(point->coords);
 		free(point);
 	}
 }

@@ -11,8 +11,13 @@
 SP_EXTRACT_MSG spExtractorSaveFeatures(const char *filename, const int numOfPoints, const SPConfig config, SP_CONFIG_MSG *msg, SPPoint *points){
     FILE *fp;
     int imageIndex, dim, i,j;
-    dim = spPointGetDimension(*points);
+    if(!points){
+        spLoggerPrintError(EXTRACT_FAIL, filename, __FUNCTION__, __LINE__);
+        return SP_EXTRACT_CANNOT_OPEN_FILE;
+    }
+    dim = spConfigGetPCADim(config, msg);
     imageIndex = spPointGetIndex(*points);
+    
     fp = fopen(filename , "w");
     if(!fp){
         spLoggerPrintError(FILE_IO_FAIL, filename, __FUNCTION__, __LINE__);
@@ -106,6 +111,7 @@ SPPoint* spExtractorLoadAllFeatures(int *totalNumOfPoints, int numOfImages, cons
                     spPointDestroy(current[index]);
                     index++;
                 }
+                free(current);
                 return NULL;
             }else{
                 result = temp;
@@ -116,8 +122,8 @@ SPPoint* spExtractorLoadAllFeatures(int *totalNumOfPoints, int numOfImages, cons
             index++;
             spPointDestroy(current[j]);
         }
+        free(current);
     }
-    if(current){ free(current);}
     *totalNumOfPoints = index;
     return result;
 }
