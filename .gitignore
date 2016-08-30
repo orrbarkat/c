@@ -26,3 +26,7 @@
 build/cProject.build/Debug/cProject.build/dgph
 
 build/cProject.build/Release/cProject.build/dgph
+
+build/*
+
+*.feats

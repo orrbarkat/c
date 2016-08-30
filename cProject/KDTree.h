@@ -16,6 +16,7 @@
 #include "SPConfig.h"
 #include "SPLogger.h"
 #include "SPPoint.h"
+#include "SPBPriorityQueue.h"
 
 
 typedef struct sp_kdtree_node_t* SPKDTreeNode;
@@ -24,6 +25,8 @@ typedef struct sp_kdtree_node_t* SPKDTreeNode;
 SPKDTreeNode spKDTreeCreateFromArray(SPKDArray kdArr,int prevDim, SPConfig config, SP_CONFIG_MSG *msg);
 
 void spKDTreeDestroy(SPKDTreeNode node);
+
+int* spFindImages(SPPoint* queryFeatures, const SPKDTreeNode root, const SPConfig config, SP_CONFIG_MSG *msg);
 
 
 #endif /* KDTree_h */

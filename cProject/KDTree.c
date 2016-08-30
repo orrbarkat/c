@@ -85,3 +85,22 @@ void spKDTreeDestroy(SPKDTreeNode node){
     free(node);
 }
 
+bool spKNNSearch(SPPoint queryFeature, const SPKDTreeNode root, int knn, int* imageCounter){
+}
+
+int* spFindImages(SPPoint* queryFeatures, const int querySize, const SPKDTreeNode root, const SPConfig config, SP_CONFIG_MSG *msg){
+    SPBPQueue imagesQ;
+    int i, knn;
+    int *imageCounter;
+    knn = spConfigGet
+    for(i=0; i<querySize; i++){
+        spKNNSearch(queryFeatures[i], root, <#int knn#>)
+    }
+    
+
+}
+
+
+
+
+
