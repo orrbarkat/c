@@ -10,6 +10,7 @@
 #define KDTree_h
 
 #define INVALID -1
+#define LESS_THAN_K_ELEMENTS
 
 #include <stdio.h>
 #include "KDArray.h"
@@ -26,7 +27,6 @@ SPKDTreeNode spKDTreeCreateFromArray(SPKDArray kdArr,int prevDim, SPConfig confi
 
 void spKDTreeDestroy(SPKDTreeNode node);
 
-int* spFindImages(SPPoint* queryFeatures, const SPKDTreeNode root, const SPConfig config, SP_CONFIG_MSG *msg);
-
+int* spFindImages(SPPoint* queryFeatures, const int querySize, const SPKDTreeNode node, const SPConfig config, SP_CONFIG_MSG *msg);
 
 #endif /* KDTree_h */

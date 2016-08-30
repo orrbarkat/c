@@ -16,6 +16,7 @@ struct sp_kdtree_node_t{
     SPPoint data;
 };
 
+
 // allocates a node
 // the point is copied but not freed
 // return a node unless the allocation failed then null is returned
@@ -85,19 +86,93 @@ void spKDTreeDestroy(SPKDTreeNode node){
     free(node);
 }
 
-bool spKNNSearch(SPPoint queryFeature, const SPKDTreeNode root, int knn, int* imageCounter){
+void spKNNSearch(SPPoint queryFeature, const SPKDTreeNode node, SPBPQueue q){
+    SPListElement element;
+    int index, distance;
+    bool distanceFlag = false;
+    if(!node){//null node
+        return;
+    }
+    if(node->dim==INVALID){//this is a leaf
+        index = spPointGetIndex(node->data);
+        distance = spPointL2SquaredDistance(queryFeature, node->data);
+        element = spListElementCreate(index, distance);
+        spBPQueueEnqueue(q, element);
+        spListElementDestroy(element);
+        return;
+    }
+    if(spPointGetAxisCoor(queryFeature, node->dim)<= node->val){//go to the left sub tree
+        spKNNSearch(queryFeature, node->left, q);
+        distance = pow((spPointGetAxisCoor(queryFeature, node->dim) - node->val),2);
+        distanceFlag = distance < spBPQueueMaxValue(q);
+        if(spBPQueueIsFull(q) || distanceFlag){
+            spKNNSearch(queryFeature, node->right, q);
+        }
+    }else{
+        spKNNSearch(queryFeature, node->right, q);
+        distance = pow((spPointGetAxisCoor(queryFeature, node->dim) - node->val),2);
+        distanceFlag = distance < spBPQueueMaxValue(q);
+        if(spBPQueueIsFull(q) || distanceFlag){
+            spKNNSearch(queryFeature, node->left, q);
+        }
+    }
+    return;
 }
 
-int* spFindImages(SPPoint* queryFeatures, const int querySize, const SPKDTreeNode root, const SPConfig config, SP_CONFIG_MSG *msg){
-    SPBPQueue imagesQ;
-    int i, knn;
-    int *imageCounter;
-    knn = spConfigGet
-    for(i=0; i<querySize; i++){
-        spKNNSearch(queryFeatures[i], root, <#int knn#>)
+int* getTopImagesFromArray(int* imageCounter, int numOfImages, const int numOfSimilarImg){
+    int i, j, maxIndex, maxValue, *res;
+    res = (int*)malloc(numOfSimilarImg*sizeof(int));
+    if(!res){
+        spLoggerPrintError(ALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+        return NULL;
     }
-    
+    for(i=0; i<numOfSimilarImg; i++){
+        maxValue = 0;
+        maxIndex = i;
+        for(j=0; j<numOfImages; j++){
+            if(imageCounter[j]>maxValue){
+                maxIndex = j;
+                maxValue = imageCounter[j];
+            }
+        }
+        res[i] = maxIndex;
+        imageCounter[maxIndex] = NOT_PRESENT;
+    }
+    return res;
+}
 
+
+int* spFindImages(SPPoint* queryFeatures, const int querySize, const SPKDTreeNode root, const SPConfig config, SP_CONFIG_MSG *msg){
+    int i, knn, numOfSimilarImg, numOfImages;
+    int *imageCounter, *res;
+    SPListElement element;
+    knn = spConfigGetKNN(config, msg);
+
+    SPBPQueue q = spBPQueueCreate(knn);
+    if(!q){
+        spLoggerPrintError(ALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+        return NULL;
+    }
+    numOfImages = spConfigGetNumOfImages(config, msg);
+    numOfSimilarImg = spConfigGetNumOfSimilarImages(config, msg);
+    imageCounter = (int*)calloc(numOfImages, sizeof(int));
+    if(!imageCounter){
+        spLoggerPrintError(ALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+        spBPQueueDestroy(q);
+        return NULL;
+    }
+    for(i=0; i<querySize; i++){//count the num of neighbours of every image for all features of the query
+        spBPQueueClear(q);
+        spKNNSearch(queryFeatures[i], root, q);
+        while((element = spBPQueuePeek(q))!=NULL){
+            imageCounter[spListElementGetIndex(element)]+=1;
+            spListElementDestroy(element);
+            spBPQueueDequeue(q);
+        }
+    }
+    res = getTopImagesFromArray(imageCounter, numOfImages, numOfSimilarImg);
+    free(imageCounter);
+    return res;
 }
 
 

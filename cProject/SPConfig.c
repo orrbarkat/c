@@ -67,24 +67,25 @@ void spConfigPrintError(const char* filename, int line, const SP_CONFIG_MSG* mes
 /**
  * sets default values for functions
  */
-void setDefaults(SPConfig* config, SP_CONFIG_MSG *msg){
+void setDefaults(SPConfig config, SP_CONFIG_MSG *msg){
     if (!config){ return; }
     //TODO: refactor magic numbers out to header file
-    (*config)->spPCADimension = 20;
-    (*config)->spNumOfFeatures = 100;
-    (*config)->spExtractionMode = true;
-    (*config)->spMinimalGUI = false;
-    (*config)->spKNN = 1;
-    (*config)->spKDTreeSplitMethod = MAX_SPREAD;
-    (*config)->spLoggerLevel = 3;
-    (*config)->spNumOfSimilarImages = 1;
-    (*config)->spImagesDirectory = (char*)malloc(LINE_LENGTH*sizeof(char));
-    (*config)->spImagesDirectory = (char*)malloc(LINE_LENGTH*sizeof(char));
-    (*config)->spImagesPrefix = (char*)malloc(LINE_LENGTH*sizeof(char));
-    (*config)->spImagesSuffix = (char*)malloc(LINE_LENGTH*sizeof(char));
-    (*config)->spPCAFilename = (char*)calloc(LINE_LENGTH,sizeof(char));
-    (*config)->spLoggerFilename = (char*)calloc( LINE_LENGTH,sizeof(char));
-    if (!((*config)->spImagesDirectory && (*config)->spImagesSuffix && (*config)->spImagesPrefix && (*config)->spPCAFilename && (*config)->spLoggerFilename)){
+    config->spPCADimension = 20;
+    config->spNumOfFeatures = 100;
+    config->spNumOfImages = -1;
+    config->spExtractionMode = true;
+    config->spMinimalGUI = false;
+    config->spKNN = 1;
+    config->spKDTreeSplitMethod = MAX_SPREAD;
+    config->spLoggerLevel = 3;
+    config->spNumOfSimilarImages = 1;
+    config->spImagesDirectory = (char*)malloc(LINE_LENGTH*sizeof(char));
+    config->spImagesDirectory = (char*)malloc(LINE_LENGTH*sizeof(char));
+    config->spImagesPrefix = (char*)malloc(LINE_LENGTH*sizeof(char));
+    config->spImagesSuffix = (char*)malloc(LINE_LENGTH*sizeof(char));
+    config->spPCAFilename = (char*)calloc(LINE_LENGTH,sizeof(char));
+    config->spLoggerFilename = (char*)calloc( LINE_LENGTH,sizeof(char));
+    if (!(config->spImagesDirectory && config->spImagesSuffix && config->spImagesPrefix && config->spPCAFilename && config->spLoggerFilename)){
         *msg = SP_CONFIG_ALLOC_FAIL;
     }
     return;
@@ -247,28 +248,28 @@ int parseLine(SPConfig* config, const char* line, SP_CONFIG_MSG* msg){
  * - true if not valid conf
  * - false if the conf is valid
  */
-bool invalid(const SPConfig *config, SP_CONFIG_MSG* msg){
+bool invalid(const SPConfig config, SP_CONFIG_MSG* msg){
     bool validity = false;
-    if(!*(*config)->spPCAFilename){
-        strcpy((*config)->spPCAFilename,"pca.yml");
+    if(!config->spPCAFilename){
+        strcpy(config->spPCAFilename,"pca.yml");
     }
-    if(!*(*config)->spLoggerFilename){
-        strcpy((*config)->spLoggerFilename,"stdout");
+    if(!config->spLoggerFilename){
+        free(config->spLoggerFilename);
     }
     // check that
-    if(!*(*config)->spImagesDirectory){
+    if(!config->spImagesDirectory){
         *msg = SP_CONFIG_MISSING_DIR;
         validity=true;
     }
-    if(!*(*config)->spImagesPrefix){
+    if(!config->spImagesPrefix){
         *msg = SP_CONFIG_MISSING_PREFIX;
         validity=true;
     }
-    if(!*(*config)->spImagesSuffix){
+    if(!config->spImagesSuffix){
         *msg = SP_CONFIG_MISSING_SUFFIX;
         validity=true;
     }
-    if(!(*config)->spNumOfImages){
+    if(config->spNumOfImages<=0){
         *msg = SP_CONFIG_MISSING_NUM_IMAGES;
         validity = true;
     }
@@ -303,7 +304,7 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg){
         fclose(fp);
         return NULL;
     }
-    setDefaults(&config, msg);
+    setDefaults(config, msg);
     while (fgets(line, LINE_LENGTH, fp)){
         if ( parseLine(&config, line, msg)<0){
             fclose(fp);
@@ -314,7 +315,7 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg){
         lineNumber++;
     }
     fclose(fp);
-    if (invalid(&config,msg)){
+    if (invalid(config,msg)){
         spConfigPrintError(filename, lineNumber, msg);
         spConfigDestroy(config);
         return NULL;

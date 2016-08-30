@@ -202,7 +202,7 @@ SPPoint* sp::ImageProc::getImageFeatures(const char* imagePath, int index,
 		}
 		resPoints[i] = spPointCreate(pcaSift, pcaDim, index);
 	}
-	free(pcaSift);
+    free(pcaSift);
 	return resPoints;
 }
 

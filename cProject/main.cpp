@@ -25,11 +25,13 @@ using namespace sp;
 int main(int argc, const char * argv[]) {
     char query[LINE_LENGTH], currentPointPath[LINE_LENGTH];
     ImageProc *processor = nullptr;
-    int numOfFeats, numOfImages, i, totalNumOfPoints=0;
+    int numOfFeats, numOfImages, i,querySize, totalNumOfPoints;
+    int *results;
     SP_EXTRACT_MSG extractMsg;
-    SPPoint *points;
+    SPPoint *points, *queryFeats;
     SPKDArray kdArray;
     SPKDTreeNode root;
+    totalNumOfPoints =0;
     //create a config struct
     SP_CONFIG_MSG *msg = (SP_CONFIG_MSG*)malloc(sizeof(*msg));
     char filename[LINE_LENGTH];
@@ -71,8 +73,9 @@ int main(int argc, const char * argv[]) {
             totalNumOfPoints += numOfFeats;
             free(points);
         }
-        
-    }//get the points whether they where extracted or not
+        delete processor;
+    }
+    //get the points whether they where extracted or not
     points = spExtractorLoadAllFeatures(&totalNumOfPoints, numOfImages, conf, msg);
     if(!points){
         spLoggerPrintError(EXTRACT_FAIL, __FILE__, __FUNCTION__, __LINE__);
@@ -92,15 +95,24 @@ int main(int argc, const char * argv[]) {
     }
     root = spKDTreeCreateFromArray(kdArray, -1, conf, msg);
     //Query
-    printf("Please enter an image path:\n");
-    scanf("%s", query);
-    
-    
-    
-    
+    processor = new ImageProc(conf);
+    while (true) {
+        printf("Please enter an image path:\n");
+        scanf("%s", query);
+        if(strcmp(query, "<>") == 0){ break; }
+        //    TODO: check for "<>" i.e exit signal.
+        queryFeats = processor->getImageFeatures(query, 0, &querySize);
+        results = spFindImages(queryFeats, querySize, root, conf, msg);
+        spConfigGetImagePath(currentPointPath, conf, *results);
+        processor->showImage(currentPointPath);
+        free(results);
+        for(i=0; i<querySize;i++){
+            spPointDestroy(queryFeats[i]);
+        }
+        free(queryFeats);
+    }
     spKDTreeDestroy(root);
     spConfigDestroy(conf);
-    printf("works");
     delete processor;
     free(msg);
     return 0;
