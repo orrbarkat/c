@@ -451,3 +451,10 @@ KDTreeSplitMethod spConfigGetSplitMethod(SPConfig config, SP_CONFIG_MSG *msg){
     return config->spKDTreeSplitMethod;
 }
 
+int spConfigGetKNN(SPConfig config, SP_CONFIG_MSG *msg){
+    assert(msg != NULL);
+    assert(config != NULL);
+    *msg = SP_CONFIG_SUCCESS;
+    return config->spKNN;
+}
+

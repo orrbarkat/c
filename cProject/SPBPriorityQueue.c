@@ -1,7 +1,5 @@
 #include "SPBPriorityQueue.h"
-#include "SPList.h"
-#include <assert.h>
-#include <stdlib.h>
+
 
 
 struct sp_bp_queue_t{

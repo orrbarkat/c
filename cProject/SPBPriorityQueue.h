@@ -1,7 +1,12 @@
 #ifndef SPBPRIORITYQUEUE_H_
 #define SPBPRIORITYQUEUE_H_
-#include "SPListElement.h"
+
+#include <assert.h>
+#include <stdlib.h>
 #include <stdbool.h>
+#include "SPListElement.h"
+#include "SPList.h"
+
 
 
 /**

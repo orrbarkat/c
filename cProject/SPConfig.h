@@ -243,4 +243,16 @@ bool spConfigGetConfigFile(int argc, const char * argv[], char *filename,SP_CONF
  */
 KDTreeSplitMethod spConfigGetSplitMethod(SPConfig config, SP_CONFIG_MSG *msg);
 
+/**
+ * Returns the K Nearest Neighbours value. i.e the value of spKNN.
+ *
+ * @param config - the configuration structure
+ * @assert msg != NULL and config != NULL
+ * @param msg - pointer in which the msg returned by the function is stored
+ * @return the spKNN in success, assert otherwise.
+ *
+ * - SP_CONFIG_SUCCESS - in case of success is inside msg
+ */
+int spConfigGetKNN(SPConfig config, SP_CONFIG_MSG *msg);
+
 #endif /* SPCONFIG_H_ */
