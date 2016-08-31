@@ -13,8 +13,16 @@ struct sp_kdarray_t{
     int** featsMat;
     int numOfFeats;
     int dim;
-    int axis;
 };
+
+struct sorting_point_t{
+    SPPoint point;
+    int axis;
+    int index;
+};
+
+typedef struct sorting_point_t* SORTINGPoint;
+
 
 void spKDArrayPrintFeaturesMat(SPKDArray kdArr){
     //**************    print the featsMat *****************
@@ -28,13 +36,11 @@ void spKDArrayPrintFeaturesMat(SPKDArray kdArr){
 }
 
 
-int compare_points(void *kdArr, const void *a, const void *b ){
-    SPKDArray kd = (SPKDArray)kdArr;
-    int pA = *(int *)a, pB = *(int *)b;
-    SPPoint pointA = kd->points[pA];
-    SPPoint pointB = kd->points[pB];
-    double dPointA = spPointGetAxisCoor(pointA, kd->axis);
-    double dPointB = spPointGetAxisCoor(pointB, kd->axis);
+int compare_points(const void *a, const void *b ){
+    SORTINGPoint pA = *(SORTINGPoint*)a;
+    SORTINGPoint pB = *(SORTINGPoint*)b;
+    double dPointA = spPointGetAxisCoor(pA->point, pA->axis);
+    double dPointB = spPointGetAxisCoor(pB->point, pB->axis);
     return (dPointA > dPointB) - (dPointA < dPointB);
 }
 
@@ -70,9 +76,15 @@ SPKDArray spKDArrayCreate(SPPoint* arr, int size, int dim){
 
 SPKDArray spKDArrayInit(SPPoint* arr, int size, SPConfig config, SP_CONFIG_MSG *msg){
     int i=0,j = spConfigGetPCADim(config, msg);
+    SORTINGPoint *sortArray = (SORTINGPoint*)malloc(size*sizeof(*sortArray));
+    if(!sortArray){
+        spLoggerPrintError(ALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+        return NULL;
+    }
     SPKDArray kdArr = spKDArrayCreate(arr, size, j);
     if(!kdArr){
         spLoggerPrintError(ALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+        free(sortArray);
         return NULL;
     }
         //create the matrix
@@ -83,6 +95,33 @@ SPKDArray spKDArrayInit(SPPoint* arr, int size, SPConfig config, SP_CONFIG_MSG *
         return NULL;
 
     }
+    for(i=0; i<size; i++){
+        sortArray[i] = (SORTINGPoint)malloc(sizeof(**sortArray));
+        if (!sortArray[i]) {
+            spLoggerPrintError(ALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+            spKDArrayDestroy(kdArr,NO_ROWS);
+            for(j=0;j<i; j++){
+                spPointDestroy(sortArray[j]->point);
+                free(sortArray[j]);
+            }
+            free(sortArray);
+            return NULL;
+        }
+        sortArray[i]->point = spPointCopy(kdArr->points[i]);
+        if (!sortArray[i]->point) {
+            spLoggerPrintError(ALLOC_FAIL, __FILE__, __FUNCTION__, __LINE__);
+            spKDArrayDestroy(kdArr,NO_ROWS);
+            for(j=0;j<i; j++){
+                spPointDestroy(sortArray[j]->point);
+                free(sortArray[j]);
+            }
+            free(sortArray[i]);
+            free(sortArray);
+            return NULL;
+        }
+        sortArray[i]->index = i;
+    }
+    
     for(i=0; i<kdArr->dim;i++){
         kdArr->featsMat[i] = malloc(size*sizeof(**kdArr->featsMat));
         if (!kdArr->featsMat[i]) {
@@ -91,10 +130,12 @@ SPKDArray spKDArrayInit(SPPoint* arr, int size, SPConfig config, SP_CONFIG_MSG *
             return NULL;
         }
         for(j=0; j<size; j++){
-            kdArr->featsMat[i][j] = j;
+            sortArray[j]->axis = i;
         }
-        kdArr->axis = i;
-        qsort_r(kdArr->featsMat[i], size, sizeof(int), kdArr, compare_points);
+        qsort(sortArray, size, sizeof(SORTINGPoint), compare_points);
+        for(j=0; j<size; j++){
+            kdArr->featsMat[i][j] = sortArray[j]->index;
+        }
         
     }
     spLoggerPrintInfo(KDARRAY_CREATED);
