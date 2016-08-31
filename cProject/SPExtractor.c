@@ -35,7 +35,7 @@ SP_EXTRACT_MSG spExtractorSaveFeatures(const char *filename, const int numOfPoin
     return SP_EXTRACT_SUCCESS;
 }
 
-SPPoint* spExtractorLoadImageFeatures(int imageIndex, int *numOfPoints, const SPConfig config, SP_CONFIG_MSG *msg){
+SPPoint* spExtractorLoadImageFeatures(int imageIndex, int *numOfPoints, const SPConfig config){
     FILE *fp;
     int i,j, dim;
     char filename[LINE_LENGTH];
@@ -87,7 +87,7 @@ SPPoint* spExtractorLoadAllFeatures(int *totalNumOfPoints, int numOfImages, cons
         return NULL;
     }
     for(i=0; i<numOfImages; i++){
-        current = spExtractorLoadImageFeatures(i, &currentNumOfPoints, config, msg);
+        current = spExtractorLoadImageFeatures(i, &currentNumOfPoints, config);
         if (!current){//there was an error in feats
             spLoggerPrintError(EXTRACT_FAIL, __FILE__, __FUNCTION__, __LINE__);
             while(index>0){

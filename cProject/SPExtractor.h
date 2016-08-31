@@ -39,7 +39,7 @@ typedef enum sp_extract_msg_t {
  */
 SP_EXTRACT_MSG spExtractorSaveFeatures(const char *filename, const int numOfPoints, const SPConfig config, SP_CONFIG_MSG *msg, SPPoint *points);
 
-SPPoint* spExtractorLoadImageFeatures(int imageIndex, int *numOfPoints, const SPConfig config, SP_CONFIG_MSG *msg);
+SPPoint* spExtractorLoadImageFeatures(int imageIndex, int *numOfPoints, const SPConfig config);
 
 SPPoint* spExtractorLoadAllFeatures(int *totalNumOfPoints, int numOfImages, const SPConfig config, SP_CONFIG_MSG *msg);
 

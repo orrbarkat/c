@@ -15,3 +15,4 @@ TODO:
 3. the code has some "TODO" inside...
 4. if config->spLoggerfilename is stdout it needs to print to stdout  
 5. in kdarray init the qsort_r's args need a change of order to work for you, the comperator needs that too
+6. make file needs adaptation
