@@ -191,7 +191,7 @@ SPKDArray* spKDArraySplit(SPKDArray kdArr, int coor){
         }
     }
     //TODO: check if there are errors
-    spLoggerPrintInfo(KDARRAY_CREATED);
+//    spLoggerPrintInfo(KDARRAY_CREATED);
 //    spKDArrayPrintFeaturesMat(kd[0]);
 //    spKDArrayPrintFeaturesMat(kd[1]);
     return kd;
