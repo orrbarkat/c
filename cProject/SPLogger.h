@@ -14,6 +14,7 @@
 #define EXTRACT_FAIL "Extraction failed\n"
 #define INVALID_SIZE "Invalid size parameter\n"
 #define KDARRAY_FAIL "Failed to initialize SPKDArray\n"
+#define RESULTS_MSG(x) printf("Best candidates for %s are:\n", x)
 
 /**
  * SP Logger summary:

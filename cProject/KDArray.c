@@ -99,7 +99,7 @@ SPKDArray spKDArrayInit(SPPoint* arr, int size, SPConfig config, SP_CONFIG_MSG *
     }
     spLoggerPrintInfo(KDARRAY_CREATED);
     //TODO: check msg to see if there are errors
-    spKDArrayPrintFeaturesMat(kdArr);
+//    spKDArrayPrintFeaturesMat(kdArr);
     return kdArr;
 }
 
@@ -192,8 +192,8 @@ SPKDArray* spKDArraySplit(SPKDArray kdArr, int coor){
     }
     //TODO: check if there are errors
     spLoggerPrintInfo(KDARRAY_CREATED);
-    spKDArrayPrintFeaturesMat(kd[0]);
-    spKDArrayPrintFeaturesMat(kd[1]);
+//    spKDArrayPrintFeaturesMat(kd[0]);
+//    spKDArrayPrintFeaturesMat(kd[1]);
     return kd;
 }
 
@@ -235,9 +235,11 @@ SPPoint spKDArrayGetPoint(SPKDArray kdArr, int index){
 }
 
 int spKDArrayFindSplitDim(const SPKDArray kdArr,int prevDim,const SPConfig config, SP_CONFIG_MSG *msg){
-    int res=0,i, last = kdArr->numOfFeats-1;
+    int res, i, last;
     double maxDiff=0, currentDiff, minCoordinate, maxCoordinate;
     KDTreeSplitMethod method = spConfigGetSplitMethod(config, msg);
+    res =0;
+    last = kdArr->numOfFeats-1;
     switch (method){
         case MAX_SPREAD:
             for(i=0; i<kdArr->dim;i++){
@@ -251,7 +253,7 @@ int spKDArrayFindSplitDim(const SPKDArray kdArr,int prevDim,const SPConfig confi
             }
             return res;
         case RANDOM:
-            res = rand()%kdArr->numOfFeats;
+            res = rand()%kdArr->dim;
             break;
         case INCREMENTAL:
             res = (prevDim+1)%kdArr->numOfFeats;

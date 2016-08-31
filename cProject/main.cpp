@@ -25,7 +25,7 @@ using namespace sp;
 int main(int argc, const char * argv[]) {
     char query[LINE_LENGTH], currentPointPath[LINE_LENGTH];
     ImageProc *processor = nullptr;
-    int numOfFeats, numOfImages, i,querySize, totalNumOfPoints;
+    int numOfFeats, numOfImages, i,querySize, totalNumOfPoints, numOfSimilar;
     int *results;
     SP_EXTRACT_MSG extractMsg;
     SPPoint *points, *queryFeats;
@@ -96,15 +96,31 @@ int main(int argc, const char * argv[]) {
     root = spKDTreeCreateFromArray(kdArray, -1, conf, msg);
     //Query
     processor = new ImageProc(conf);
+    numOfSimilar = spConfigGetNumOfSimilarImages(conf, msg);
     while (true) {
         printf("Please enter an image path:\n");
         scanf("%s", query);
-        if(strcmp(query, "<>") == 0){ break; }
-        //    TODO: check for "<>" i.e exit signal.
+        if(strcmp(query, "<>") == 0){ break; } //exit signal
+        //get query from user
         queryFeats = processor->getImageFeatures(query, 0, &querySize);
+        if(!queryFeats){
+            spLoggerPrintError(EXTRACT_FAIL, query, __FUNCTION__, __LINE__);
+            break;
+        }
         results = spFindImages(queryFeats, querySize, root, conf, msg);
-        spConfigGetImagePath(currentPointPath, conf, *results);
-        processor->showImage(currentPointPath);
+        //show results
+        if(spConfigMinimalGui(conf, msg)){
+            for(i=0; i<numOfSimilar; i++){
+                spConfigGetImagePath(currentPointPath, conf, results[i]);
+                processor->showImage(currentPointPath);
+            }
+        }else{//non-minimal gui
+            RESULTS_MSG(query);
+            for(i=0; i<numOfSimilar; i++){
+                spConfigGetImagePath(currentPointPath, conf, results[i]);
+                printf("%s\n", currentPointPath);
+            }
+        }
         free(results);
         for(i=0; i<querySize;i++){
             spPointDestroy(queryFeats[i]);

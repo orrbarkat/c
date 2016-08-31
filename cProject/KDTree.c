@@ -105,14 +105,14 @@ void spKNNSearch(SPPoint queryFeature, const SPKDTreeNode node, SPBPQueue q){
         spKNNSearch(queryFeature, node->left, q);
         distance = pow((spPointGetAxisCoor(queryFeature, node->dim) - node->val),2);
         distanceFlag = distance < spBPQueueMaxValue(q);
-        if(spBPQueueIsFull(q) || distanceFlag){
+        if(!spBPQueueIsFull(q) || distanceFlag){
             spKNNSearch(queryFeature, node->right, q);
         }
     }else{
         spKNNSearch(queryFeature, node->right, q);
         distance = pow((spPointGetAxisCoor(queryFeature, node->dim) - node->val),2);
         distanceFlag = distance < spBPQueueMaxValue(q);
-        if(spBPQueueIsFull(q) || distanceFlag){
+        if(!spBPQueueIsFull(q) || distanceFlag){
             spKNNSearch(queryFeature, node->left, q);
         }
     }

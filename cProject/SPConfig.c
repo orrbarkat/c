@@ -198,7 +198,7 @@ int parseLine(SPConfig* config, const char* line, SP_CONFIG_MSG* msg){
         if(atoi(variables[1])<=0){//value contains non digit characters
             *msg = SP_CONFIG_INVALID_INTEGER;
         }
-        (*config)->spNumOfImages = atoi(variables[1]);
+        (*config)->spKNN = atoi(variables[1]);
         
     }else if(strcmp(variables[0],"spLoggerLevel")==0){
         if(1>atoi(variables[1]) || 4<atoi(variables[1])){//value contains non digit characters or digit are not in [1..4]
@@ -447,7 +447,7 @@ bool spConfigGetConfigFile(int argc, const char * argv[], char *filename, SP_CON
 
 KDTreeSplitMethod spConfigGetSplitMethod(SPConfig config, SP_CONFIG_MSG *msg){
     assert(msg != NULL);
-    assert(config && config->spKDTreeSplitMethod);
+    assert(config);
     *msg = SP_CONFIG_SUCCESS;
     return config->spKDTreeSplitMethod;
 }
