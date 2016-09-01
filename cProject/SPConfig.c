@@ -251,14 +251,15 @@ int parseLine(SPConfig* config, const char* line, SP_CONFIG_MSG* msg){
  */
 bool invalid(const SPConfig config, SP_CONFIG_MSG* msg){
     bool validity = false;
-    if(!config->spPCAFilename){
+    if(strcmp(config->spPCAFilename,"")==0){
         strcpy(config->spPCAFilename,"pca.yml");
     }
-    if(!config->spLoggerFilename){
+    if(strcmp(config->spLoggerFilename,"")==0){
         free(config->spLoggerFilename);
+        config->spLoggerFilename = NULL;
     }
     // check that
-    if(!config->spImagesDirectory){
+    if(strcmp(config->spImagesDirectory,"")==0){
         *msg = SP_CONFIG_MISSING_DIR;
         validity=true;
     }
