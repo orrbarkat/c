@@ -2,7 +2,7 @@ CC = gcc
 CPP = g++
 # put your object files here
 OBJS = main.o SPImageProc.o SPPoint.o SPConfig.o SPLogger.o SPBPriorityQueue.o SPList.o SPListElement.o SPExtractor.o KDTree.o KDArray.o
-# The executabel filename
+# The executable filename
 EXEC = SPCBIR
 INCLUDEPATH=/usr/local/lib/opencv-3.1.0/include/
 #/usr/local/Cellar/opencv3/3.1.0_3/include/

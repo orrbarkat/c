@@ -52,8 +52,8 @@ int main(int argc, const char * argv[]) {
         spLoggerPrintError(PARAM_MISSING_NUM_IMAGES, __FILE__, __FUNCTION__, __LINE__);
         return 0;
     }
+    processor = new ImageProc(conf);
     if( spConfigIsExtractionMode(conf, msg)){
-        processor = new ImageProc(conf);
         for(i=0; i<numOfImages; i++){
             spConfigGetImagePath(currentPointPath, conf, i);
             points = processor->getImageFeatures(currentPointPath, i, &numOfFeats);
@@ -73,7 +73,6 @@ int main(int argc, const char * argv[]) {
             totalNumOfPoints += numOfFeats;
             free(points);
         }
-        delete processor;
     }
     //get the points whether they where extracted or not
     points = spExtractorLoadAllFeatures(&totalNumOfPoints, numOfImages, conf, msg);
@@ -95,7 +94,6 @@ int main(int argc, const char * argv[]) {
     }
     root = spKDTreeCreateFromArray(kdArray, -1, conf, msg);
     //Query
-    processor = new ImageProc(conf);
     numOfSimilar = spConfigGetNumOfSimilarImages(conf, msg);
     while (true) {
         printf("Please enter an image path:\n");

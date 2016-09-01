@@ -18,6 +18,7 @@ struct sp_config_t {
 };
 
 void spConfigPrintCliError(const char* filename, const SP_CONFIG_MSG message){
+    //TODO: refactor to macros
     switch (message) {
         case SP_CONFIG_CANNOT_OPEN_FILE:
             strcmp(filename,DEFAULT_CONFIG) ? printf("The configuration file %s couldn’t be open\n"\
@@ -320,6 +321,7 @@ SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg){
         spConfigDestroy(config);
         return NULL;
     }
+    //TODO: make sure that if loggerfilename is not defined by config file set it to NULL
     spLoggerCreate(config->spLoggerFilename, config->spLoggerLevel);
     *msg = SP_CONFIG_SUCCESS;
     return config;
@@ -420,6 +422,7 @@ SP_CONFIG_MSG spConfigGetPCAPath(char* pcaPath, const SPConfig config){
 
 
 void spConfigDestroy(SPConfig config){
+    //TODO: free logger if initialized
     if (config){
         free(config->spImagesDirectory);
         free(config->spImagesPrefix);

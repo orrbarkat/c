@@ -9,10 +9,21 @@ this is the how to work on the project:
 6. happy coding!
 
 
+****nova****
+1. orrbarkat@nova.cs.tau.ac.il
+2. password in whatsapp
+3. cd cProject
+4. source init.sh
+5. run with SPCBIR ( -c <config filename>)
+
 TODO:
-1. headers
-2. there are some strings inside the code
+1. headers: extractor, kdarray, kd tree, 
+2. there are some strings inside the code refactor to macros
 3. the code has some "TODO" inside...
-4. if config->spLoggerfilename is stdout it needs to print to stdout  
-5. free new struct (sorting point) allocation in kd array init
-6. make file needs adaptation?
+4. if config->spLoggerfilename is stdout it needs to print to stdout 
+- logger is not freed-> should be destroyed by config destroy method
+5. if numOfSimilarimages is larger than numof images what should happen?
+6.
+7. free new struct (sorting point) allocation in kd array init
+8. make file needs adaptation?
+9. reset the config file to a working default and add to the zip that is sent

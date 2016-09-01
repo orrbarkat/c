@@ -11,7 +11,6 @@ SPBPQueue spBPQueueCreate(int maxSize){
 	assert(maxSize>0);
 	SPBPQueue queue = (SPBPQueue)malloc(sizeof(*queue));
 	if (queue == NULL) {
-		//TODO should we tell anyone??
 		return NULL;
 	} else {
 		queue->list = spListCreate();

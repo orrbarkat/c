@@ -75,6 +75,7 @@ SPKDArray spKDArrayCreate(SPPoint* arr, int size, int dim){
 }
 
 SPKDArray spKDArrayInit(SPPoint* arr, int size, SPConfig config, SP_CONFIG_MSG *msg){
+    //TODO: free sorting point in case of error and free before function exits.
     int i=0,j = spConfigGetPCADim(config, msg);
     SORTINGPoint *sortArray = (SORTINGPoint*)malloc(size*sizeof(*sortArray));
     if(!sortArray){
@@ -136,7 +137,7 @@ SPKDArray spKDArrayInit(SPPoint* arr, int size, SPConfig config, SP_CONFIG_MSG *
         for(j=0; j<size; j++){
             kdArr->featsMat[i][j] = sortArray[j]->index;
         }
-        
+        //TODO: free sorting point
     }
     spLoggerPrintInfo(KDARRAY_CREATED);
     //TODO: check msg to see if there are errors
@@ -231,7 +232,6 @@ SPKDArray* spKDArraySplit(SPKDArray kdArr, int coor){
             }
         }
     }
-    //TODO: check if there are errors
 //    spLoggerPrintInfo(KDARRAY_CREATED);
 //    spKDArrayPrintFeaturesMat(kd[0]);
 //    spKDArrayPrintFeaturesMat(kd[1]);
