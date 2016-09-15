@@ -1,25 +1,14 @@
 #ifndef SPCONFIG_H_
 #define SPCONFIG_H_
 
-#define LINE_LENGTH 1024
-
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
 #include "SPLogger.h"
+#include "macros.h"
  
-#define INVALID_FILE "The configuration file  couldn’t be open"
-#define INVALID_VALUE "Invalid value - constraint not met"
-#define PARAM_MISSING_DIR "Parameter spImagesDirectory is not set"
-#define PARAM_MISSING_PREFIX "Parameter spImagesPrefix is not set"
-#define PARAM_MISSING_SUFFIX "Parameter spImagesSuffix is not set"
-#define PARAM_MISSING_NUM_IMAGES "Parameter spNumOfImages is not set"
-#define DEFAULT_CONFIG "spcbir.config"
-#define FEATURE_EXTENTION ".feats"
-#define INDEX_OUT_OF_RANGE "given index is larger than number of images in configuration."
-
 
 /**
  * A data-structure which is used for configuring the system.
@@ -52,9 +41,9 @@ typedef struct sp_config_t* SPConfig;
 /**
  * Creates a new system configuration struct. The configuration struct
  * is initialized based on the configuration file given by 'filename'.
- * 
- * @param filename - the name of the configuration file
  * @assert msg != NULL
+ * @param filename - the name of the configuration file
+ * @param logger - to be used in case of "destroy" function
  * @param msg - pointer in which the msg returned by the function is stored
  * @return NULL in case an error occurs. Otherwise, a pointer to a struct which
  * 		   contains all system configuration.
@@ -73,11 +62,11 @@ typedef struct sp_config_t* SPConfig;
  *
  *
  */
-SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg);
+SPConfig spConfigCreate(const char* filename, SP_CONFIG_MSG* msg, SPLogger logger);
 
 /*
  * Returns true if spExtractionMode = true, false otherwise.
- *
+ *SPLogger logger
  * @param config - the configuration structure
  * @assert msg != NULL
  * @param msg - pointer in which the msg returned by the function is stored
@@ -216,14 +205,15 @@ SP_CONFIG_MSG spConfigGetSavePath(char* path, const SPConfig config, int index);
 SP_CONFIG_MSG spConfigGetPCAPath(char* pcaPath, const SPConfig config);
 
 /**
- * Frees all memory resources associate with config. 
+ * Frees all memory resources associate with config.
+ * checks if logger has been initiated and if so - frees it
  * If config == NULL nothig is done.
  */
-void spConfigDestroy(SPConfig config);
+void spConfigDestroy(SPConfig config, SPLogger logger);
 
 /**
- *set the config file for the create method
- * if flag is different than -c prints an regular error
+ * set the config file for the create method
+ * if flag is different than -c prints a regular error
  * @param filename is large enough
  * @return 
  *  -true if cli is wrongly formatted

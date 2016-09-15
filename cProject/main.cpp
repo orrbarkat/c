@@ -5,7 +5,7 @@
 //  Created by Orr Barkat on 04/08/2016.
 //  Copyright © 2016 Orr Barkat. All rights reserved.
 //
-
+#include <iostream>
 #include <cstdio>
 #include <cstdlib>
 #include "SPImageProc.h"
@@ -17,43 +17,49 @@ extern "C" {
 #include "KDArray.h"
 #include "SPLogger.h"
 #include "SPExtractor.h"
+#include "macros.h"
 }
 
 using namespace sp;
 
 
 int main(int argc, const char * argv[]) {
-    char query[LINE_LENGTH], currentPointPath[LINE_LENGTH];
-    ImageProc *processor = nullptr;
-    int numOfFeats, numOfImages, i,querySize, totalNumOfPoints, numOfSimilar;
-    int *results;
-    SP_EXTRACT_MSG extractMsg;
-    SPPoint *points, *queryFeats;
-    SPKDArray kdArray;
-    SPKDTreeNode root;
-    totalNumOfPoints =0;
-    //create a config struct
+	extern SPLogger logger;
+	char query[LINE_LENGTH], currentPointPath[LINE_LENGTH];
+	ImageProc *processor = nullptr;
+	int numOfFeats, numOfImages, i,querySize, totalNumOfPoints, numOfSimilar;
+	int *results;
+	int problem;
+	SP_EXTRACT_MSG extractMsg;
+	SPPoint *points, *queryFeats;
+	SPKDArray kdArray;
+	SPKDTreeNode root = NULL;
+	totalNumOfPoints =0;
     SP_CONFIG_MSG *msg = (SP_CONFIG_MSG*)malloc(sizeof(*msg));
     char filename[LINE_LENGTH];
-    if( spConfigGetConfigFile(argc, argv, filename, msg)){
+    problem = 0;
+    if(spConfigGetConfigFile(argc, argv, filename, msg)){
         free(msg);
         return 0;
     }
-    SPConfig conf = spConfigCreate(filename, msg);
+    SPConfig conf = spConfigCreate(filename, msg, logger);
     if (!conf){
-        printf("an error has occured with the config process\n");
+        printf(CONFIG_ERROR);
+        free(msg);
         return 0;
     }
-     //preprocess - extract features if nessacery
+     // preprocess - extract features if nessacery
+    spLoggerPrintInfo(PREPROCESS);
     numOfImages = spConfigGetNumOfImages(conf, msg);
     if(*msg != SP_CONFIG_SUCCESS){
-        spConfigDestroy(conf);
+        spConfigDestroy(conf, logger);
         free(msg);
         spLoggerPrintError(PARAM_MISSING_NUM_IMAGES, __FILE__, __FUNCTION__, __LINE__);
         return 0;
     }
     processor = new ImageProc(conf);
     if( spConfigIsExtractionMode(conf, msg)){
+        spLoggerPrintInfo(EXTRACTING_FEATS);
         for(i=0; i<numOfImages; i++){
             spConfigGetImagePath(currentPointPath, conf, i);
             points = processor->getImageFeatures(currentPointPath, i, &numOfFeats);
@@ -63,10 +69,7 @@ int main(int argc, const char * argv[]) {
                     for(i=0; i<numOfFeats; i++){
                         spPointDestroy(points[i]);
                     }
-                    free(points);
-                    spConfigDestroy(conf);
-                    delete processor;
-                    free(msg);
+                    free(points); spConfigDestroy(conf, logger); delete processor; free(msg);
                     return 0;
                 }
             }
@@ -75,30 +78,39 @@ int main(int argc, const char * argv[]) {
         }
     }
     //get the points whether they where extracted or not
-    points = spExtractorLoadAllFeatures(&totalNumOfPoints, numOfImages, conf, msg);
+    spLoggerPrintInfo(LOAD_FEATS);
+    points = spExtractorLoadAllFeatures(&totalNumOfPoints, numOfImages, conf);
     if(!points){
         spLoggerPrintError(EXTRACT_FAIL, __FILE__, __FUNCTION__, __LINE__);
-        spConfigDestroy(conf);
-        delete processor;
-        free(msg);
+        spConfigDestroy(conf, logger); delete processor; free(msg);
         return 0;
     }
     //initialize data structures
     kdArray = spKDArrayInit(points, totalNumOfPoints, conf, msg);
     if(!kdArray){
         spLoggerPrintError(KDARRAY_FAIL, __FILE__, __FUNCTION__, __LINE__);
-        spConfigDestroy(conf);
-        delete processor;
-        free(msg);
+        spConfigDestroy(conf, logger); delete processor; free(msg);
+        ArrayPointDestroy(points, 0, totalNumOfPoints);
         return 0;
     }
-    root = spKDTreeCreateFromArray(kdArray, -1, conf, msg);
+    root = spKDTreeCreateFromArray(kdArray, -1, conf, msg, &problem);
+    if(problem == true){
+    	spKDTreeDestroy(root);
+    }
+    if(!root){
+    	spLoggerPrintError(TREE_ERROR, __FILE__, __FUNCTION__, __LINE__);
+    	spConfigDestroy(conf, logger); delete processor; free(msg);
+    	ArrayPointDestroy(points, 0, totalNumOfPoints); spKDArrayDestroy(kdArray, ALL_ROWS);
+    }
+    spLoggerPrintInfo(TREE_SUCCESS);
     //Query
     numOfSimilar = spConfigGetNumOfSimilarImages(conf, msg);
     while (true) {
-        printf("Please enter an image path:\n");
+        printf(QUERY_REQUEST);
         scanf("%s", query);
-        if(strcmp(query, "<>") == 0){ break; } //exit signal
+        if(strcmp(query, EXIT_SIGN) == 0){
+        	break;
+        }
         //get query from user
         queryFeats = processor->getImageFeatures(query, 0, &querySize);
         if(!queryFeats){
@@ -106,13 +118,18 @@ int main(int argc, const char * argv[]) {
             break;
         }
         results = spFindImages(queryFeats, querySize, root, conf, msg);
+        if (!results){
+        	spLoggerPrintError(NO_IMAGES_FOUND, query, __FUNCTION__, __LINE__);
+        	break;
+        }
         //show results
         if(spConfigMinimalGui(conf, msg)){
             for(i=0; i<numOfSimilar; i++){
                 spConfigGetImagePath(currentPointPath, conf, results[i]);
                 processor->showImage(currentPointPath);
             }
-        }else{//non-minimal gui
+        }
+        else{ //non-minimal gui
             RESULTS_MSG(query);
             for(i=0; i<numOfSimilar; i++){
                 spConfigGetImagePath(currentPointPath, conf, results[i]);
@@ -125,9 +142,9 @@ int main(int argc, const char * argv[]) {
         }
         free(queryFeats);
     }
-    spKDTreeDestroy(root);
-    spConfigDestroy(conf);
-    delete processor;
+    spLoggerPrintInfo(EXITING);
+    spKDTreeDestroy(root); spConfigDestroy(conf, logger); delete processor;
+    ArrayPointDestroy(points, 0, totalNumOfPoints);
     free(msg);
     return 0;
 }

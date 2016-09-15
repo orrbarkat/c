@@ -112,6 +112,7 @@ bool spBPQueueIsFull(SPBPQueue source){
 SP_BPQUEUE_MSG spBPQueueEnqueue(SPBPQueue source, SPListElement element){
 
 	// variables declaration//
+	int i;
 	SPList source_list = source->list;
 	SPListElement elem_to_comp;
 	int list_size = spListGetSize(source_list);
@@ -134,7 +135,7 @@ SP_BPQUEUE_MSG spBPQueueEnqueue(SPBPQueue source, SPListElement element){
 		you find the one which is bigger than the inserted one and insert the element
 		before that one. you will stop after you ran out of elements to look for */
         
-        for(int i=0; i<list_size; i++){
+        for(i=0; i<list_size; i++){
             if (spListElementGetValue(element) <= spListElementGetValue(elem_to_comp)){// element is smaller than next elem, insert before current
                 if (spBPQueueIsFull(source)){
                     if (spListInsertBeforeCurrent(source_list, element) == SP_LIST_OUT_OF_MEMORY){

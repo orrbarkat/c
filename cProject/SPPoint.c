@@ -11,24 +11,24 @@ struct sp_point_t{
 };
 
 SPPoint spPointCreate(double* data, int dim, int index){
+	int i;
     assert((dim > 0) && data && (index >= 0));
     //Printdata(&data, dim);
-    struct sp_point_t *point = (struct sp_point_t*) malloc(sizeof(*point));
+    struct sp_point_t *point = (struct sp_point_t*) malloc(sizeof(struct sp_point_t));
     if (point == NULL) {
+    	spPointDestroy(point);
+    	return NULL;
+    }
+    point->coords = (double *)calloc(dim, sizeof(double));
+    if(!(point->coords)){
+    	spPointDestroy(point);
         return NULL;
     }
-    point->coords = (double *)malloc(dim * sizeof(double));
-    if(!point->coords){
-        free(point);
-        return NULL;
+    for (i = 0; i < dim; i++) {
+        (point->coords)[i] = data[i];
     }
     point->dim = dim;
     point->index = index;
-    
-    for ( int i = 0; i < dim; i++) {
-        (point->coords)[i] = data[i];
-    }
-    
     return point;
 }
 
@@ -36,14 +36,34 @@ SPPoint spPointCopy(SPPoint source){
 	SPPoint copy;
 	assert (source != NULL);
 	copy = spPointCreate(source->coords,source->dim,source->index);
+	if (!copy){
+		spPointDestroy(source);
+		return NULL;
+	}
 	return copy;
 }
 
 void spPointDestroy(SPPoint point){
-	if (point != NULL){
-		free(point->coords);
+	if (point){
+		if (point->coords){
+			free(point->coords);
+		}
 		free(point);
 	}
+	return;
+}
+
+void ArrayPointDestroy(SPPoint* ptrarr, int start_ind, int end_ind){
+	int i;
+	if(ptrarr){
+		for(i=start_ind; i<end_ind; i++){
+			if(ptrarr[i]){
+				spPointDestroy(ptrarr[i]);
+			}else{break;}
+		}
+		free(ptrarr);
+	}
+	return;
 }
 
 int spPointGetDimension(SPPoint point){

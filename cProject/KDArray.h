@@ -16,15 +16,7 @@
 #include "SPPoint.h"
 #include "SPLogger.h"
 #include "SPConfig.h"
-
-#define LINE_LENGTH 1024
-#define KDARRAY_CREATED "created the kd array\n"
-#define NO_ROWS -1
-#define ALL_ROWS 0
-#define NOT_PRESENT -1
-#define LEFT 0
-#define RIGHT 1
-#define FIRST 0
+#include "macros.h"
 
 /**
  * SPKDArray Summary
@@ -48,39 +40,52 @@
  *
  */
 
-
 typedef struct sp_kdarray_t* SPKDArray;
 
 /**
  * Allocates a new kdarray in the memory.
  * Given data array and the array size.
- * @param arr - the array of all the points
+ * @param arr - the array of all the points that need to be initialized
  * @param size - the size of the array
+ * @param msg - the massage to be printed
  * @return
- * NULL in case allocation failure ocurred OR data is NULL OR size <=0.
- * Otherwise, the new array is returned
+ * 	-NULL in case allocation failure ocurred OR data is NULL OR size <=0.
+ * 	-Otherwise, the new array is returned
  */
 SPKDArray spKDArrayInit(SPPoint* arr, int size, SPConfig config, SP_CONFIG_MSG *msg);
 
 
 /**
- * Returns two kd-arrays (kdLeft, kdRight) such that the first ⌈𝒏/𝟐⌉ points with respect
- * to the coordinate coor are in kdLeft , and the rest of the points are in kdRight.
- * ** allocates the new arrays inside the method
- * @return
+ * Returns two kd-arrays (kdLeft, kdRight) such that the first ⌈𝒏/𝟐⌉
+ * points with respect to the coordinate coor are in kdLeft , and the
+ * rest of the points are in kdRight.
+ * allocates the new arrays inside the method
+ * @param: kdArr: the array to be divided by 2
+ * @param: coor: integer to be partitioned by
+ * @return:
  * - SPKDArray of size 2 if successful
  * - NULL if failed
  */
 SPKDArray* spKDArraySplit(SPKDArray kdArr, int coor);
 
-
-SPKDArray spKDArrayCreate(SPPoint* arr, int size, int dim);
-
+/*
+ * help function to free array of 2 SPKDArray after using spKDArraySplit
+ * method.
+ * The method uses spKDArrayDestroy method to fulfill its destiny.
+ * @param: kdArr: the array that contains two SPKDArray structs.
+ * @param: left: decides if left side has already initiated
+ * @param: l_size: how many points are populated in left side.
+ * @param: right: decides if right side has already initiated.
+ * @param: r_size: how many points are populated in right side.
+ */
+void spKDMultiArrayDestroy(SPKDArray* kdArr, bool left, int l_size,
+		bool right, int r_size);
 
 /**
- * frees all the memory the kdarry held
- * size is for freeing only part of the matrix rows
- * if not needed pass NULL or 0.
+ * frees all the memory that kdarry held
+ * @param: kdArr: the array that should be free.
+ * @param: size: how many rows in the matrix are allocated
+ * and needs to be free.
  */
 void spKDArrayDestroy(SPKDArray kdArr, int size);
 
@@ -104,20 +109,24 @@ SPPoint spKDArrayGetPoint(SPKDArray kdArr,int index);
 
 /**
  * calculates the splitting dim depending on the split method
- * @param 
- *  -kdArr the array that needs to be split
- *  -prevDim the previous dimention that was used to split the array -1 if it's the first split
+ * @param: kdArr: the array that needs to be split.
+ * @param: prevDim: the previous dimension that was used to split the array
+ * -1 if it's the first split.
+ * @param: config: configuration file to extract split method from.
+ * @param: msg: massage to be printed.
  * @return
- *  -returns the split dimention
+ *  -returns the split dimension
  */
-int spKDArrayFindSplitDim(const SPKDArray kdArr,int prevDim,const SPConfig config, SP_CONFIG_MSG *msg);
+int spKDArrayFindSplitDim(const SPKDArray kdArr,int prevDim,
+					const SPConfig config, SP_CONFIG_MSG *msg);
 
 /**
+ * a getter for median value.
  * @assert 
  *  - kdArr is not null
  *  - split dim is in range
  * @return
- * - the value of the largest double in the ith axis.
+ * - the value of the largest double in the i'th axis.
  */
 double spKDArrayGetMedianVal(SPKDArray kdArr, int splitDim);
 

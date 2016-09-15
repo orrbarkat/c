@@ -1,20 +1,8 @@
 #ifndef SPLOGGER_H_
 #define SPLOGGER_H_
-#define ERROR_HEADER "---ERROR---\n"
-#define WARN_HEADER "---WARNING---\n"
-#define INFO_HEADER "---INFO---\n"
-#define DEBUG_HEADER "---DEBUG---\n"
-#define FILE_NAME "- file: "
-#define FUNCTION_NAME "- function: "
-#define LINE_NUM "- line: "
-#define MSG_BODY "- message: "
-#define EXTACTING "Extracting features...\n"
-#define ALLOC_FAIL "Memory allocation failed\n"
-#define FILE_IO_FAIL "Cannot open the file\n"
-#define EXTRACT_FAIL "Extraction failed\n"
-#define INVALID_SIZE "Invalid size parameter\n"
-#define KDARRAY_FAIL "Failed to initialize SPKDArray\n"
-#define RESULTS_MSG(x) printf("Best candidates for %s are:\n", x)
+
+#include <string.h>
+#include "macros.h"
 
 /**
  * SP Logger summary:
